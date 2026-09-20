@@ -11,6 +11,8 @@ effects free of confounding, and simulate "what if we had done differently?".
 **Live pitch:** Explain · Predict · Simulate.
 Shortlisted — AI Innovation Idea Hack, MIT Manipal.
 
+**Live:** <https://causalocpm-mit-research-conclave.vercel.app/> · **Repo:** <https://github.com/Mounil2005/causalocpm-mit-research-conclave>
+
 ---
 
 ## What's in the box
@@ -79,9 +81,10 @@ cp .env.example .env.local
 
 ## Deploy to Vercel
 
-Repo: <https://github.com/Aditya0105singh/CAUSALOCPM-NEW>
+Live: <https://causalocpm-mit-research-conclave.vercel.app/>
+Repo: <https://github.com/Mounil2005/causalocpm-mit-research-conclave>
 
-1. Go to [vercel.com/new](https://vercel.com/new) and **Import** `Aditya0105singh/CAUSALOCPM-NEW`.
+1. Go to [vercel.com/new](https://vercel.com/new) and **Import** `Mounil2005/causalocpm-mit-research-conclave`.
 2. Framework is auto-detected as **Next.js** — leave every build setting at its default.
 3. (Optional) add `ANTHROPIC_API_KEY` under *Environment Variables* for the live Copilot; without it the Copilot uses grounded scripted answers.
 4. **Deploy.** `prebuild` regenerates and Zod-validates the fixtures during the Vercel build.

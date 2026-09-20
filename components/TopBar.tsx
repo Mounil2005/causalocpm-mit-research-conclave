@@ -45,7 +45,7 @@ export function TopBar({
           <div className="flex items-center gap-2 text-[12px] text-ink-soft">
             {rightSlot}
             <a
-              href="https://github.com/Aditya0105singh/CAUSALOCPM"
+              href="https://github.com/Mounil2005/causalocpm-mit-research-conclave"
               target="_blank"
               rel="noreferrer"
               className="hidden items-center gap-1.5 rounded-lg border border-line bg-card px-2.5 py-1.5 font-medium hover:border-forest/40 hover:text-forest sm:flex"

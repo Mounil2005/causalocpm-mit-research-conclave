@@ -1,7 +1,7 @@
 # Reference-run evidence
 
 Every number in the console and the executive report is the actual output of the
-reference pipeline (`Aditya0105singh/CAUSALOCPM`, `src/phase1–5` + `validate.py`)
+reference pipeline (`Mounil2005/CAUSALOCPM`, `src/phase1–5` + `validate.py`)
 run on the two planted-ground-truth synthetic logs. Captured **2026-09-01**.
 
 ## Files
@@ -39,7 +39,7 @@ run on the two planted-ground-truth synthetic logs. Captured **2026-09-01**.
 
 ## Reproduce
 ```bash
-git clone https://github.com/Aditya0105singh/CAUSALOCPM
+git clone https://github.com/Mounil2005/CAUSALOCPM
 cd CAUSALOCPM && pip install -r causal_ocpm/requirements.txt
 python causal_ocpm/data/generate_data.py        # writes prihir_synthetic.csv
 python causal_ocpm/data/generate_healthcare.py  # writes hospital_synthetic.csv

@@ -6,7 +6,7 @@
  * PROVENANCE — the causal numbers in `domainConfig.ts` (naive/DML effects, CIs,
  * discovery precision/recall/F1, coefficient recovery, E-value, placebo, CATE,
  * seed robustness) are the ACTUAL outputs of the reference pipeline
- * (github.com/Aditya0105singh/CAUSALOCPM · src/phase1–5 + validate.py) run on the
+ * (github.com/Mounil2005/CAUSALOCPM · src/phase1–5 + validate.py) run on the
  * two planted-ground-truth 15,000-row synthetic logs (seed 42), captured
  * 2026-09-01. The full validation report and generated logs are in
  * `docs/reference-run/`. Nothing here is hand-tuned.
