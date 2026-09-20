@@ -1,0 +1,3456 @@
+{
+  "domain": "manufacturing",
+  "generatedAt": "2024-06-30T09:00:00.000Z",
+  "spuriousEdgeReason": "",
+  "narrative": {
+    "agentName": "Procurement Agent",
+    "agentRole": "autonomously selects a supplier for each incoming order",
+    "decisionLabel": "Selected Supplier A",
+    "altLabel": "Supplier B",
+    "outcomeLabel": "Shipment delayed",
+    "agentSignals": [
+      {
+        "label": "Quoted unit cost",
+        "weight": 0.36
+      },
+      {
+        "label": "Stated capacity / availability",
+        "weight": 0.34
+      },
+      {
+        "label": "Historical on-time rate",
+        "weight": 0.22
+      },
+      {
+        "label": "Order complexity",
+        "weight": 0.08
+      }
+    ],
+    "agentBlindSpots": [
+      "Complex orders are routed to Supplier A and are slower regardless of supplier — a confounded path",
+      "Supplier A's effect runs through Material Lead Time, not visible in the quote",
+      "The historical on-time rate is itself confounded by which orders Supplier A gets"
+    ],
+    "stages": [
+      {
+        "id": "order",
+        "label": "Order"
+      },
+      {
+        "id": "supplier",
+        "label": "Supplier",
+        "agent": "Procurement Agent"
+      },
+      {
+        "id": "material",
+        "label": "Material"
+      },
+      {
+        "id": "factory",
+        "label": "Factory",
+        "agent": "Production Agent"
+      },
+      {
+        "id": "transport",
+        "label": "Transport",
+        "agent": "Logistics Agent"
+      },
+      {
+        "id": "customer",
+        "label": "Customer"
+      }
+    ],
+    "incident": {
+      "trigger": "Supplier A confirmed for a high-complexity order",
+      "steps": [
+        {
+          "stageId": "supplier",
+          "t": "10:42",
+          "note": "Procurement Agent selects Supplier A",
+          "sev": "warn"
+        },
+        {
+          "stageId": "material",
+          "t": "11:18",
+          "note": "Material lead time runs 7.4 d over baseline",
+          "sev": "warn"
+        },
+        {
+          "stageId": "factory",
+          "t": "13:05",
+          "note": "Production queue backs up",
+          "sev": "warn"
+        },
+        {
+          "stageId": "transport",
+          "t": "15:40",
+          "note": "Booked transport window missed",
+          "sev": "crit"
+        },
+        {
+          "stageId": "customer",
+          "t": "next day",
+          "note": "Shipment SLA breached — 7.1 d late",
+          "sev": "crit"
+        }
+      ]
+    }
+  },
+  "story": {
+    "incidentId": "SC-20481",
+    "caseId": "ORD_0017",
+    "trigger": "Supplier A confirmed for a high-complexity order",
+    "outcomeVariable": "Shipment Delay",
+    "outcomeUnit": "days",
+    "agent": {
+      "name": "Procurement Agent",
+      "role": "autonomously selects a supplier for each incoming order",
+      "decision": "Selected Supplier A",
+      "alt": "Supplier B",
+      "confidencePct": 87,
+      "signals": [
+        {
+          "label": "Quoted unit cost",
+          "weight": 0.36
+        },
+        {
+          "label": "Stated capacity / availability",
+          "weight": 0.34
+        },
+        {
+          "label": "Historical on-time rate",
+          "weight": 0.22
+        },
+        {
+          "label": "Order complexity",
+          "weight": 0.08
+        }
+      ],
+      "blindSpots": [
+        "Complex orders are routed to Supplier A and are slower regardless of supplier — a confounded path",
+        "Supplier A's effect runs through Material Lead Time, not visible in the quote",
+        "The historical on-time rate is itself confounded by which orders Supplier A gets"
+      ]
+    },
+    "ripple": {
+      "stages": [
+        {
+          "id": "order",
+          "label": "Order"
+        },
+        {
+          "id": "supplier",
+          "label": "Supplier",
+          "agent": "Procurement Agent"
+        },
+        {
+          "id": "material",
+          "label": "Material"
+        },
+        {
+          "id": "factory",
+          "label": "Factory",
+          "agent": "Production Agent"
+        },
+        {
+          "id": "transport",
+          "label": "Transport",
+          "agent": "Logistics Agent"
+        },
+        {
+          "id": "customer",
+          "label": "Customer"
+        }
+      ],
+      "steps": [
+        {
+          "stageId": "supplier",
+          "t": "10:42",
+          "note": "Procurement Agent selects Supplier A",
+          "sev": "warn"
+        },
+        {
+          "stageId": "material",
+          "t": "11:18",
+          "note": "Material lead time runs 7.4 d over baseline",
+          "sev": "warn"
+        },
+        {
+          "stageId": "factory",
+          "t": "13:05",
+          "note": "Production queue backs up",
+          "sev": "warn"
+        },
+        {
+          "stageId": "transport",
+          "t": "15:40",
+          "note": "Booked transport window missed",
+          "sev": "crit"
+        },
+        {
+          "stageId": "customer",
+          "t": "next day",
+          "note": "Shipment SLA breached — 7.1 d late",
+          "sev": "crit"
+        }
+      ],
+      "finalDelayDays": 14.7
+    },
+    "cause": {
+      "path": [
+        "Order Complexity",
+        "Supplier A",
+        "Material Lead Time",
+        "Shipment Delay"
+      ],
+      "effectDays": 6.65,
+      "naiveDays": 8.78,
+      "trueDays": 6.66,
+      "confounderLabel": "Order Complexity",
+      "confoundingDays": 2.13,
+      "confoundingPct": 24.3,
+      "drivers": [
+        {
+          "label": "Supplier A Dependency",
+          "days": 6.65
+        },
+        {
+          "label": "Material Lead Time",
+          "days": 2.88
+        },
+        {
+          "label": "Express Carrier",
+          "days": 1.9
+        },
+        {
+          "label": "Approval Duration",
+          "days": 1.12
+        },
+        {
+          "label": "Order Complexity",
+          "days": 0.7
+        }
+      ]
+    },
+    "whatIf": {
+      "actualLabel": "Selected Supplier A",
+      "actualDays": 14.7,
+      "cfLabel": "Supplier B",
+      "cfDays": 10,
+      "savedDays": 4.7,
+      "reductionPct": 32
+    },
+    "confidenceGap": {
+      "agentPct": 87,
+      "causalPct": 76,
+      "note": "The agent was 87% confident. Only 76% of the observed Supplier A Dependency → shipment delay association survives as a causal effect once order complexity is adjusted out — the rest was confounding."
+    },
+    "trust": {
+      "verdict": "HIGH CONFIDENCE",
+      "checks": [
+        {
+          "label": "Ground truth recovered",
+          "detail": "planted 6.66 → recovered 6.65 days · 0.2% error",
+          "pass": true
+        },
+        {
+          "label": "Confounding accounted for",
+          "detail": "naive 8.78 → causal 6.65 days · 24.3% was confounding",
+          "pass": true
+        },
+        {
+          "label": "Placebo test passed",
+          "detail": "permuted-treatment effect 0.02 ≈ 0",
+          "pass": true
+        },
+        {
+          "label": "Hidden-factor stress test passed",
+          "detail": "VanderWeele E-value 7.3 — an unmeasured confounder would need that strength on both sides",
+          "pass": true
+        },
+        {
+          "label": "Repeated simulations agree",
+          "detail": "10-seed range [6.43, 6.78] days",
+          "pass": true
+        }
+      ],
+      "evidence": [
+        {
+          "k": "Recovered effect",
+          "v": "6.65 days"
+        },
+        {
+          "k": "Recovery error",
+          "v": "0.2%"
+        },
+        {
+          "k": "Discovery F1",
+          "v": "0.94"
+        },
+        {
+          "k": "Bootstrap stability",
+          "v": "86%"
+        },
+        {
+          "k": "E-value",
+          "v": "7.3"
+        }
+      ]
+    },
+    "action": {
+      "title": "Shift ~25% procurement from Supplier A to Supplier B",
+      "detail": "Supplier A dependency is the dominant causal driver via Material Lead Time. Re-routing a quarter of volume to Supplier B cuts exposure without breaching capacity.",
+      "annualSavings": 479000,
+      "payback": "3.7 months",
+      "confidence": "High",
+      "reductionPct": 20.5
+    }
+  },
+  "agentDecisions": [
+    {
+      "id": "AGT-PRC-4200",
+      "agent": "Procurement Agent",
+      "decisionLabel": "Selected Supplier A",
+      "confidence": 0.87,
+      "caseId": "ORD_0017",
+      "entity": "Fasteners",
+      "complexityScore": 8,
+      "outcomeDays": 14.7,
+      "counterfactualDays": 10,
+      "dominantDriver": "Supplier A Dependency",
+      "dominantContribution": 6.71,
+      "controllableDays": 10.18,
+      "structuralDays": 1.13,
+      "verdict": "aligned"
+    },
+    {
+      "id": "AGT-PRC-4217",
+      "agent": "Procurement Agent",
+      "decisionLabel": "Selected Supplier A",
+      "confidence": 0.87,
+      "caseId": "ORD_0029",
+      "entity": "Raw Metal",
+      "complexityScore": 10,
+      "outcomeDays": 13.9,
+      "counterfactualDays": 5.9,
+      "dominantDriver": "Supplier A Dependency",
+      "dominantContribution": 11.39,
+      "controllableDays": 14.86,
+      "structuralDays": 0.47,
+      "verdict": "aligned"
+    },
+    {
+      "id": "AGT-PRC-4234",
+      "agent": "Procurement Agent",
+      "decisionLabel": "Selected Supplier A",
+      "confidence": 0.89,
+      "caseId": "ORD_0035",
+      "entity": "Raw Metal",
+      "complexityScore": 8,
+      "outcomeDays": 13.1,
+      "counterfactualDays": 10.3,
+      "dominantDriver": "Supplier A Dependency",
+      "dominantContribution": 4.02,
+      "controllableDays": 8.33,
+      "structuralDays": 1.11,
+      "verdict": "over-confident"
+    },
+    {
+      "id": "AGT-PRC-4251",
+      "agent": "Procurement Agent",
+      "decisionLabel": "Selected Supplier A",
+      "confidence": 0.9,
+      "caseId": "ORD_0038",
+      "entity": "Assemblies",
+      "complexityScore": 6,
+      "outcomeDays": 11.6,
+      "counterfactualDays": 4.2,
+      "dominantDriver": "Supplier A Dependency",
+      "dominantContribution": 10.53,
+      "controllableDays": 13.59,
+      "structuralDays": 1.44,
+      "verdict": "over-confident"
+    },
+    {
+      "id": "AGT-PRC-4268",
+      "agent": "Procurement Agent",
+      "decisionLabel": "Selected Supplier A",
+      "confidence": 0.87,
+      "caseId": "ORD_0016",
+      "entity": "Raw Metal",
+      "complexityScore": 4,
+      "outcomeDays": 11.2,
+      "counterfactualDays": 7.2,
+      "dominantDriver": "Supplier A Dependency",
+      "dominantContribution": 5.67,
+      "controllableDays": 8.33,
+      "structuralDays": 0.63,
+      "verdict": "aligned"
+    },
+    {
+      "id": "AGT-PRC-4285",
+      "agent": "Procurement Agent",
+      "decisionLabel": "Selected Supplier A",
+      "confidence": 0.89,
+      "caseId": "ORD_0037",
+      "entity": "Assemblies",
+      "complexityScore": 9,
+      "outcomeDays": 11,
+      "counterfactualDays": 5.2,
+      "dominantDriver": "Supplier A Dependency",
+      "dominantContribution": 8.22,
+      "controllableDays": 12.77,
+      "structuralDays": 1.43,
+      "verdict": "over-confident"
+    }
+  ],
+  "causalAuditScore": {
+    "score": 87,
+    "status": "PROCEED",
+    "dimensions": [
+      {
+        "key": "Evidence completeness",
+        "score": 90,
+        "why": "96% data quality; ~4% of fields imputed"
+      },
+      {
+        "key": "Effect recovery",
+        "score": 95,
+        "why": "0.2% error vs the planted causal effect"
+      },
+      {
+        "key": "Causal confidence",
+        "score": 93,
+        "why": "95% CI width 0.12 days"
+      },
+      {
+        "key": "Discovery quality",
+        "score": 86,
+        "why": "autonomous discovery F1 0.94"
+      },
+      {
+        "key": "Confounding robustness",
+        "score": 89,
+        "why": "VanderWeele E-value 7.3"
+      },
+      {
+        "key": "Counterfactual stability",
+        "score": 90,
+        "why": "10-seed std 0.089 days"
+      },
+      {
+        "key": "Decision explainability",
+        "score": 74,
+        "why": "effect is mediated through a latent variable, not a direct edge the agent can inspect"
+      },
+      {
+        "key": "Intervention confidence",
+        "score": 82,
+        "why": "top action rated high confidence, measured"
+      }
+    ]
+  },
+  "scenario": {
+    "name": "Shipment Delay Analysis",
+    "outcomeVariable": "Shipment Delay",
+    "outcomeUnit": "days",
+    "treatmentLabel": "Supplier A Dependency",
+    "confounderLabel": "Order Complexity",
+    "moderatorLabel": "Order Complexity",
+    "org": "Northwind Components Co.",
+    "domainLabel": "Manufacturing",
+    "timeRange": "Jan 2023 – Apr 2024",
+    "totalEvents": 15000,
+    "treatedCases": 8100,
+    "treatedPct": 54,
+    "dataSources": 8,
+    "lastUpdated": "2 hours ago",
+    "description": "Traditional process mining would read Supplier A's raw correlation with delay and re-source away from it. But complex orders are preferentially routed to Supplier A and are inherently slower — a confounding path. CausalOCPM isolates the true causal effect of Supplier A dependency on shipment delay.",
+    "objectTypes": 5,
+    "causalLinks": 9,
+    "reliabilityPct": 86,
+    "objectNames": [
+      "Orders",
+      "Machines",
+      "Workers",
+      "Materials",
+      "Shipments"
+    ],
+    "simBaseline": 8.2,
+    "outcomeMean": 6.24,
+    "outcomeStd": 4.44
+  },
+  "executiveSummary": {
+    "headline": "Supplier A dependency is the dominant causal driver of shipment delay — statistically validated, not just correlated.",
+    "confidence": "HIGH CONFIDENCE",
+    "bullets": [
+      "Recovered causal effect 6.65 days via Double ML vs a planted ground truth of 6.66 — recovery error 0.2%. A naive dashboard would have reported 8.78; confounding accounts for 2.13 of that.",
+      "Autonomous bootstrapped-PC discovery: F1 0.94 (8 of 9 planted edges, no spurious edges). Domain knowledge then recovers the 1 missed edge — never inventing a relationship.",
+      "Recommended action: Shift ~25% procurement from Supplier A to Supplier B → ~$479K/yr expected savings, payback 3.7 months",
+      "Robust to hidden confounding: VanderWeele E-value ≈ 7.3, placebo test +0.02 ≈ 0, stable across 10 regenerated datasets"
+    ],
+    "recommendedAction": "Shift ~25% procurement from Supplier A to Supplier B",
+    "alertOutcome": "Shipment Delay",
+    "alertReductionPct": 20.5,
+    "chain": [
+      "Order Complexity",
+      "Supplier A",
+      "Material Lead Time",
+      "Shipment Delay"
+    ],
+    "riskSegment": "Supplier A · high-complexity orders"
+  },
+  "kpis": {
+    "causalLinks": 9,
+    "target": "Shipment Delay",
+    "expertRules": 9,
+    "reliabilityPct": 86
+  },
+  "discoveryMetrics": {
+    "precision": 1,
+    "recall": 0.89,
+    "f1": 0.94,
+    "stability": 0.86,
+    "bootstrapRuns": 20,
+    "shd": 1,
+    "truePositives": 8,
+    "falsePositives": 0,
+    "falseNegatives": 1,
+    "edgeStability": [
+      {
+        "edge": "Order Complexity → Supplier A Dependency",
+        "frequency": 0.31,
+        "discovered": false,
+        "pruned": false
+      },
+      {
+        "edge": "Order Complexity → Machine Queue Length",
+        "frequency": 0.94,
+        "discovered": true,
+        "pruned": false
+      },
+      {
+        "edge": "Order Complexity → Shipment Delay",
+        "frequency": 0.72,
+        "discovered": true,
+        "pruned": false
+      },
+      {
+        "edge": "Supplier A Dependency → Material Lead Time",
+        "frequency": 0.99,
+        "discovered": true,
+        "pruned": false
+      },
+      {
+        "edge": "Material Lead Time → Shipment Delay",
+        "frequency": 0.98,
+        "discovered": true,
+        "pruned": false
+      },
+      {
+        "edge": "Machine Queue Length → Approval Duration",
+        "frequency": 0.9,
+        "discovered": true,
+        "pruned": false
+      },
+      {
+        "edge": "Export Flag → Approval Duration",
+        "frequency": 0.85,
+        "discovered": true,
+        "pruned": false
+      },
+      {
+        "edge": "Approval Duration → Shipment Delay",
+        "frequency": 0.78,
+        "discovered": true,
+        "pruned": false
+      },
+      {
+        "edge": "Express Carrier → Shipment Delay",
+        "frequency": 0.66,
+        "discovered": true,
+        "pruned": false
+      }
+    ]
+  },
+  "pipelinePerf": {
+    "prePrecision": 1,
+    "preRecall": 0.89,
+    "preF1": 0.94,
+    "effectErrorPct": 0.2,
+    "confoundingRemovedPct": 24.3,
+    "bootstrapStability": 0.86,
+    "eValue": 7.3,
+    "avgModelR2": 0.96,
+    "avgCoefErrorPct": 0.6,
+    "signCertain": 9,
+    "signTotal": 9,
+    "missingEdgesRecovered": 1,
+    "spuriousRemoved": 0,
+    "validatedLinks": 9
+  },
+  "data": {
+    "datasets": 8,
+    "variables": 68,
+    "causalLinks": 9,
+    "qualityPct": 96,
+    "objects": [
+      {
+        "name": "Orders",
+        "records": 15000,
+        "attributes": 12,
+        "missingPct": 3,
+        "qualityPct": 96,
+        "updated": "2h ago"
+      },
+      {
+        "name": "Machines",
+        "records": 8,
+        "attributes": 14,
+        "missingPct": 4,
+        "qualityPct": 97,
+        "updated": "2h ago"
+      },
+      {
+        "name": "Workers",
+        "records": 15,
+        "attributes": 9,
+        "missingPct": 5,
+        "qualityPct": 95,
+        "updated": "6h ago"
+      },
+      {
+        "name": "Materials",
+        "records": 15000,
+        "attributes": 11,
+        "missingPct": 5,
+        "qualityPct": 95,
+        "updated": "4h ago"
+      },
+      {
+        "name": "Shipments",
+        "records": 15000,
+        "attributes": 10,
+        "missingPct": 4,
+        "qualityPct": 97,
+        "updated": "2h ago"
+      }
+    ],
+    "variableList": [
+      {
+        "name": "order_complexity",
+        "object": "Orders",
+        "type": "numeric",
+        "role": "confounder",
+        "missingPct": 5
+      },
+      {
+        "name": "supplier_a",
+        "object": "Machines",
+        "type": "boolean",
+        "role": "treatment",
+        "missingPct": 2
+      },
+      {
+        "name": "material_lead_time",
+        "object": "Workers",
+        "type": "numeric",
+        "role": "mediator",
+        "missingPct": 3
+      },
+      {
+        "name": "machine_queue_length",
+        "object": "Materials",
+        "type": "numeric",
+        "role": "mediator",
+        "missingPct": 6
+      },
+      {
+        "name": "export_flag",
+        "object": "Shipments",
+        "type": "boolean",
+        "role": "exogenous",
+        "missingPct": 2
+      },
+      {
+        "name": "approval_duration",
+        "object": "Orders",
+        "type": "numeric",
+        "role": "mediator",
+        "missingPct": 3
+      },
+      {
+        "name": "carrier_express",
+        "object": "Machines",
+        "type": "boolean",
+        "role": "exogenous",
+        "missingPct": 3
+      },
+      {
+        "name": "shipment_delay",
+        "object": "Workers",
+        "type": "numeric",
+        "role": "outcome",
+        "missingPct": 5
+      }
+    ],
+    "sampleEvents": [
+      {
+        "event_id": "E-00001",
+        "case_id": "ORD_0000",
+        "activity": "order_placed",
+        "resource": "Supplier C",
+        "timestamp": "2024-01-02T08:15:00Z",
+        "duration_hrs": 21.7
+      },
+      {
+        "event_id": "E-00002",
+        "case_id": "ORD_0001",
+        "activity": "material_received",
+        "resource": "Supplier B",
+        "timestamp": "2024-02-03T09:15:00Z",
+        "duration_hrs": 19.7
+      },
+      {
+        "event_id": "E-00003",
+        "case_id": "ORD_0002",
+        "activity": "production_started",
+        "resource": "Supplier B",
+        "timestamp": "2024-03-04T10:15:00Z",
+        "duration_hrs": 8.7
+      },
+      {
+        "event_id": "E-00004",
+        "case_id": "ORD_0003",
+        "activity": "quality_check",
+        "resource": "Supplier D",
+        "timestamp": "2024-04-05T11:15:00Z",
+        "duration_hrs": 26
+      },
+      {
+        "event_id": "E-00005",
+        "case_id": "ORD_0004",
+        "activity": "shipment_dispatched",
+        "resource": "Supplier A",
+        "timestamp": "2024-05-06T12:15:00Z",
+        "duration_hrs": 4.7
+      },
+      {
+        "event_id": "E-00006",
+        "case_id": "ORD_0005",
+        "activity": "order_placed",
+        "resource": "Supplier D",
+        "timestamp": "2024-06-07T13:15:00Z",
+        "duration_hrs": 7.1
+      },
+      {
+        "event_id": "E-00007",
+        "case_id": "ORD_0006",
+        "activity": "material_received",
+        "resource": "Supplier D",
+        "timestamp": "2024-01-08T14:15:00Z",
+        "duration_hrs": 26.7
+      },
+      {
+        "event_id": "E-00008",
+        "case_id": "ORD_0007",
+        "activity": "production_started",
+        "resource": "Supplier C",
+        "timestamp": "2024-02-09T15:15:00Z",
+        "duration_hrs": 12.3
+      },
+      {
+        "event_id": "E-00009",
+        "case_id": "ORD_0008",
+        "activity": "quality_check",
+        "resource": "Supplier C",
+        "timestamp": "2024-03-10T16:15:00Z",
+        "duration_hrs": 29.6
+      },
+      {
+        "event_id": "E-00010",
+        "case_id": "ORD_0009",
+        "activity": "shipment_dispatched",
+        "resource": "Supplier D",
+        "timestamp": "2024-04-11T17:15:00Z",
+        "duration_hrs": 9
+      },
+      {
+        "event_id": "E-00011",
+        "case_id": "ORD_0010",
+        "activity": "order_placed",
+        "resource": "Supplier D",
+        "timestamp": "2024-05-12T08:15:00Z",
+        "duration_hrs": 15.6
+      },
+      {
+        "event_id": "E-00012",
+        "case_id": "ORD_0011",
+        "activity": "material_received",
+        "resource": "Supplier A",
+        "timestamp": "2024-06-13T09:15:00Z",
+        "duration_hrs": 7
+      },
+      {
+        "event_id": "E-00013",
+        "case_id": "ORD_0012",
+        "activity": "production_started",
+        "resource": "Supplier C",
+        "timestamp": "2024-01-14T10:15:00Z",
+        "duration_hrs": 4.3
+      },
+      {
+        "event_id": "E-00014",
+        "case_id": "ORD_0013",
+        "activity": "quality_check",
+        "resource": "Supplier D",
+        "timestamp": "2024-02-15T11:15:00Z",
+        "duration_hrs": 28.7
+      }
+    ]
+  },
+  "discovery": {
+    "totalEvents": 15000,
+    "treatedCases": 8100,
+    "treatedPct": 54,
+    "avgOutcome": 6.24,
+    "stdOutcome": 4.44,
+    "objectInstances": 30025,
+    "coOccurrenceEdges": 105166,
+    "avgDegree": 7.01,
+    "topResources": [
+      {
+        "label": "Top machine",
+        "value": "MCH_01"
+      },
+      {
+        "label": "Top worker",
+        "value": "WRK_07"
+      },
+      {
+        "label": "Treatment arm",
+        "value": "MAT_A · 54%"
+      }
+    ],
+    "correlationGroups": [
+      {
+        "name": "Supplier",
+        "options": [
+          {
+            "label": "Supplier A",
+            "onTimePct": 55,
+            "delayedPct": 45
+          },
+          {
+            "label": "Supplier B",
+            "onTimePct": 82,
+            "delayedPct": 18
+          }
+        ]
+      },
+      {
+        "name": "Carrier",
+        "options": [
+          {
+            "label": "Standard",
+            "onTimePct": 66,
+            "delayedPct": 34
+          },
+          {
+            "label": "Express",
+            "onTimePct": 87,
+            "delayedPct": 13
+          }
+        ]
+      }
+    ],
+    "strongestRelationship": {
+      "from": "Supplier A",
+      "to": "Material Lead Time",
+      "coefficient": 7.4
+    }
+  },
+  "causalGraph": {
+    "nodes": [
+      {
+        "id": "order_complexity",
+        "label": "Order Complexity",
+        "role": "confounder",
+        "x": 0,
+        "y": 2.6
+      },
+      {
+        "id": "supplier_a",
+        "label": "Supplier A Dependency",
+        "role": "treatment",
+        "x": 0,
+        "y": 0
+      },
+      {
+        "id": "material_lead_time",
+        "label": "Material Lead Time",
+        "role": "mediator",
+        "x": 2.6,
+        "y": 0
+      },
+      {
+        "id": "machine_queue_length",
+        "label": "Machine Queue Length",
+        "role": "mediator",
+        "x": 2.6,
+        "y": 2.6
+      },
+      {
+        "id": "export_flag",
+        "label": "Export Flag",
+        "role": "exogenous",
+        "x": 2.6,
+        "y": 4.6
+      },
+      {
+        "id": "approval_duration",
+        "label": "Approval Duration",
+        "role": "mediator",
+        "x": 5.2,
+        "y": 1.8
+      },
+      {
+        "id": "carrier_express",
+        "label": "Express Carrier",
+        "role": "exogenous",
+        "x": 5.2,
+        "y": 0
+      },
+      {
+        "id": "shipment_delay",
+        "label": "Shipment Delay",
+        "role": "outcome",
+        "x": 7.8,
+        "y": 1.8
+      }
+    ],
+    "edges": [
+      {
+        "source": "order_complexity",
+        "target": "supplier_a",
+        "coef": 0.7,
+        "strength": "weak",
+        "discovered": false,
+        "bootstrapFreq": 0.31,
+        "pruned": false
+      },
+      {
+        "source": "order_complexity",
+        "target": "machine_queue_length",
+        "coef": 0.8,
+        "strength": "weak",
+        "discovered": true,
+        "bootstrapFreq": 0.94,
+        "pruned": false
+      },
+      {
+        "source": "order_complexity",
+        "target": "shipment_delay",
+        "coef": 0.2,
+        "strength": "weak",
+        "discovered": true,
+        "bootstrapFreq": 0.72,
+        "pruned": false
+      },
+      {
+        "source": "supplier_a",
+        "target": "material_lead_time",
+        "coef": 7.4,
+        "strength": "strong",
+        "discovered": true,
+        "bootstrapFreq": 0.99,
+        "pruned": false
+      },
+      {
+        "source": "material_lead_time",
+        "target": "shipment_delay",
+        "coef": 0.9,
+        "strength": "weak",
+        "discovered": true,
+        "bootstrapFreq": 0.98,
+        "pruned": false
+      },
+      {
+        "source": "machine_queue_length",
+        "target": "approval_duration",
+        "coef": 1.3,
+        "strength": "weak",
+        "discovered": true,
+        "bootstrapFreq": 0.9,
+        "pruned": false
+      },
+      {
+        "source": "export_flag",
+        "target": "approval_duration",
+        "coef": 2,
+        "strength": "moderate",
+        "discovered": true,
+        "bootstrapFreq": 0.85,
+        "pruned": false
+      },
+      {
+        "source": "approval_duration",
+        "target": "shipment_delay",
+        "coef": 0.35,
+        "strength": "weak",
+        "discovered": true,
+        "bootstrapFreq": 0.78,
+        "pruned": false
+      },
+      {
+        "source": "carrier_express",
+        "target": "shipment_delay",
+        "coef": -0.6,
+        "strength": "weak",
+        "discovered": true,
+        "bootstrapFreq": 0.66,
+        "pruned": false
+      }
+    ]
+  },
+  "effects": [
+    {
+      "driver": "supplier_a",
+      "label": "Supplier A Dependency",
+      "effectDays": 6.65,
+      "ciLow": 6.59,
+      "ciHigh": 6.71,
+      "groundTruthDays": 6.66,
+      "naiveDays": 8.78,
+      "method": "Double ML + backdoor adjustment (mediated path)"
+    },
+    {
+      "driver": "material_lead_time",
+      "label": "Material Lead Time",
+      "effectDays": 2.88,
+      "ciLow": 2.76,
+      "ciHigh": 3,
+      "groundTruthDays": 2.88,
+      "naiveDays": 2.9,
+      "method": "Structural coefficient · Double ML"
+    },
+    {
+      "driver": "carrier_express",
+      "label": "Express Carrier",
+      "effectDays": 1.9,
+      "ciLow": 1.81,
+      "ciHigh": 1.99,
+      "groundTruthDays": 1.92,
+      "naiveDays": 2.15,
+      "method": "Structural coefficient · Double ML"
+    },
+    {
+      "driver": "approval_duration",
+      "label": "Approval Duration",
+      "effectDays": 1.12,
+      "ciLow": 1.01,
+      "ciHigh": 1.23,
+      "groundTruthDays": 1.12,
+      "naiveDays": 1.17,
+      "method": "Structural coefficient · Double ML"
+    },
+    {
+      "driver": "order_complexity",
+      "label": "Order Complexity",
+      "effectDays": 0.7,
+      "ciLow": 0.59,
+      "ciHigh": 0.81,
+      "groundTruthDays": 0.64,
+      "naiveDays": 0.66,
+      "method": "Structural coefficient · Double ML"
+    }
+  ],
+  "naiveEffect": {
+    "naiveDays": 8.78,
+    "causalDays": 6.65,
+    "biasDays": 2.13,
+    "biasPct": 24.3,
+    "inflationPct": 32,
+    "ciLow": 6.59,
+    "ciHigh": 6.71,
+    "method": "Double ML · cross-fitted gradient boosting · sandwich SEs"
+  },
+  "coefficients": [
+    {
+      "edge": "Order Complexity → Supplier A Dependency",
+      "estimated": 0.66,
+      "groundTruth": 0.7
+    },
+    {
+      "edge": "Order Complexity → Machine Queue Length",
+      "estimated": 0.73,
+      "groundTruth": 0.8
+    },
+    {
+      "edge": "Order Complexity → Shipment Delay",
+      "estimated": 0.22,
+      "groundTruth": 0.2
+    },
+    {
+      "edge": "Supplier A Dependency → Material Lead Time",
+      "estimated": 7.03,
+      "groundTruth": 7.4
+    },
+    {
+      "edge": "Material Lead Time → Shipment Delay",
+      "estimated": 0.92,
+      "groundTruth": 0.9
+    },
+    {
+      "edge": "Machine Queue Length → Approval Duration",
+      "estimated": 1.28,
+      "groundTruth": 1.3
+    },
+    {
+      "edge": "Export Flag → Approval Duration",
+      "estimated": 1.94,
+      "groundTruth": 2
+    },
+    {
+      "edge": "Approval Duration → Shipment Delay",
+      "estimated": 0.35,
+      "groundTruth": 0.35
+    },
+    {
+      "edge": "Express Carrier → Shipment Delay",
+      "estimated": -0.57,
+      "groundTruth": -0.6
+    }
+  ],
+  "cate": {
+    "driver": "Supplier A Dependency",
+    "segmentVar": "Order Complexity",
+    "ate": 0.05,
+    "segments": [
+      {
+        "label": "Low (1–4)",
+        "effect": -0.03,
+        "ciLow": -0.75,
+        "ciHigh": 0.69
+      },
+      {
+        "label": "Mid (5–7)",
+        "effect": 0.01,
+        "ciLow": -0.74,
+        "ciHigh": 0.76
+      },
+      {
+        "label": "High (8–10)",
+        "effect": 0.15,
+        "ciLow": -0.66,
+        "ciHigh": 0.96
+      }
+    ],
+    "note": "This is the binary treatment's direct within-tertile effect (mediators held fixed), so it is small; the headline 6.65 days is the full path effect through Material Lead Time. What matters here is the trend: the effect grows monotonically with order complexity, so targeted re-sourcing returns most in the high-complexity segment."
+  },
+  "sensitivity": {
+    "placeboEffect": 0.02,
+    "placeboPass": true,
+    "randomCauseEstimate": 6.73,
+    "randomCauseStable": true,
+    "eValue": 7.3,
+    "reportedEstimate": 6.65,
+    "strengths": [
+      0.05,
+      0.1,
+      0.15,
+      0.2,
+      0.25,
+      0.3
+    ],
+    "estimatesUnderConfounding": [
+      5.24,
+      4.13,
+      3.38,
+      2.63,
+      2.12,
+      1.63
+    ],
+    "verdict": "The recovered effect stays positive across an assumed-unmeasured-confounding sweep out to 30% strength (6.65 → 1.63 days). Placebo test +0.02 ≈ 0; adding a random common cause re-estimates 6.73. VanderWeele E-value ≈ 7.3 — a hidden confounder would need a risk-ratio association above 7 with both treatment and outcome to nullify the effect.",
+    "seedRobustness": {
+      "nSeeds": 10,
+      "causalMean": 6.61,
+      "causalStd": 0.089,
+      "causalLo": 6.43,
+      "causalHi": 6.78,
+      "naiveLo": 8.71,
+      "naiveHi": 8.9
+    }
+  },
+  "effectAccuracy": [
+    {
+      "bucket": "0–0.1",
+      "count": 3
+    },
+    {
+      "bucket": "0.1–0.2",
+      "count": 2
+    },
+    {
+      "bucket": "0.2–0.3",
+      "count": 1
+    },
+    {
+      "bucket": "0.3–0.5",
+      "count": 0
+    },
+    {
+      "bucket": "0.5+",
+      "count": 0
+    }
+  ],
+  "topDrivers": [
+    {
+      "label": "Supplier A Dependency",
+      "impactDays": 6.65
+    },
+    {
+      "label": "Material Lead Time",
+      "impactDays": 2.88
+    },
+    {
+      "label": "Express Carrier",
+      "impactDays": 1.9
+    },
+    {
+      "label": "Approval Duration",
+      "impactDays": 1.12
+    },
+    {
+      "label": "Order Complexity",
+      "impactDays": 0.7
+    }
+  ],
+  "recommendedActions": [
+    {
+      "id": "act-1",
+      "title": "Shift ~25% procurement from Supplier A to Supplier B",
+      "detail": "Supplier A dependency is the dominant causal driver via Material Lead Time. Re-routing a quarter of volume to Supplier B cuts exposure without breaching capacity.",
+      "deltaDays": 1.68,
+      "reductionPct": 20.5,
+      "annualSavings": 479000,
+      "roi": 8.9,
+      "confidence": "High",
+      "effort": "Medium",
+      "timeline": "Immediate",
+      "capex": 54000,
+      "evidence": "MEASURED",
+      "lever": "supplier_reliability_pct"
+    },
+    {
+      "id": "act-2",
+      "title": "Automate export approval + reduce flag routing",
+      "detail": "Approval duration sits on the critical path. Automating export documentation routing removes most of the queueing delay.",
+      "deltaDays": 0.61,
+      "reductionPct": 7.5,
+      "annualSavings": 175000,
+      "roi": 3.9,
+      "confidence": "Medium",
+      "effort": "Low",
+      "timeline": "30 days",
+      "capex": 45000,
+      "evidence": "ILLUSTRATIVE",
+      "lever": "approval_automation"
+    },
+    {
+      "id": "act-3",
+      "title": "Expand machine buffer capacity (≥20%)",
+      "detail": "Added buffer capacity absorbs queue spikes on the two most-loaded machine groups.",
+      "deltaDays": 0.25,
+      "reductionPct": 3.1,
+      "annualSavings": 72000,
+      "roi": 0.6,
+      "confidence": "High",
+      "effort": "High",
+      "timeline": "60 days",
+      "capex": 126000,
+      "evidence": "ILLUSTRATIVE",
+      "lever": "machine_capacity_expanded"
+    }
+  ],
+  "projectedImpact": {
+    "totalReductionPct": 31,
+    "totalReductionDays": 2.54,
+    "trend": [
+      {
+        "period": "Jan",
+        "baseline": 8.64,
+        "withActions": 7.62
+      },
+      {
+        "period": "Feb",
+        "baseline": 7.85,
+        "withActions": 6.53
+      },
+      {
+        "period": "Mar",
+        "baseline": 8.1,
+        "withActions": 6.47
+      },
+      {
+        "period": "Apr",
+        "baseline": 7.96,
+        "withActions": 6.03
+      },
+      {
+        "period": "May",
+        "baseline": 8.54,
+        "withActions": 6.3
+      },
+      {
+        "period": "Jun",
+        "baseline": 8.22,
+        "withActions": 5.68
+      }
+    ]
+  },
+  "simulator": {
+    "baselineOutcome": 8.2,
+    "outcomeLabel": "Shipment Delay",
+    "throughputBaseline": 100,
+    "riskBaseline": 45,
+    "costPerDelayDay": 960,
+    "annualVolume": 297,
+    "mediators": [
+      {
+        "name": "Material Lead Time",
+        "baseline": 7.2,
+        "unit": "days"
+      },
+      {
+        "name": "Machine Queue Length",
+        "baseline": 3.1,
+        "unit": "units"
+      },
+      {
+        "name": "Approval Duration",
+        "baseline": 2.4,
+        "unit": "days"
+      }
+    ],
+    "levers": [
+      {
+        "id": "supplier_reliability_pct",
+        "label": "Supplier B Allocation",
+        "group": "Supplier & Procurement",
+        "kind": "slider",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "unit": "%",
+        "baseline": 40,
+        "hint": "60% of volume currently goes to Supplier A. Shift more to Supplier B."
+      },
+      {
+        "id": "export_flag_reduction",
+        "label": "Streamline Export Documentation",
+        "group": "Supplier & Procurement",
+        "kind": "toggle",
+        "min": 0,
+        "max": 1,
+        "step": 1,
+        "unit": "",
+        "baseline": 0,
+        "hint": "Reduces export-related approval delay ~35%."
+      },
+      {
+        "id": "machine_capacity_expanded",
+        "label": "Expand Machine Capacity",
+        "group": "Machine & Capacity",
+        "kind": "toggle",
+        "min": 0,
+        "max": 1,
+        "step": 1,
+        "unit": "",
+        "baseline": 0,
+        "hint": "Adds processing units — reduces machine queue ~40%."
+      },
+      {
+        "id": "additional_workforce",
+        "label": "Additional Workforce",
+        "group": "Machine & Capacity",
+        "kind": "slider",
+        "min": 0,
+        "max": 20,
+        "step": 1,
+        "unit": "FTE",
+        "baseline": 0,
+        "hint": "Each additional worker reduces queue ~0.3 units."
+      },
+      {
+        "id": "approval_automation",
+        "label": "Automate Approval Steps",
+        "group": "Approvals & Process",
+        "kind": "toggle",
+        "min": 0,
+        "max": 1,
+        "step": 1,
+        "unit": "",
+        "baseline": 0,
+        "hint": "Reduces approval duration ~50%."
+      },
+      {
+        "id": "order_batching",
+        "label": "Enable Order Batching",
+        "group": "Approvals & Process",
+        "kind": "toggle",
+        "min": 0,
+        "max": 1,
+        "step": 1,
+        "unit": "",
+        "baseline": 0,
+        "hint": "Smooths order-complexity spikes ~20%."
+      },
+      {
+        "id": "carrier_express_pct",
+        "label": "Express Carrier Usage",
+        "group": "Logistics & Delivery",
+        "kind": "slider",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "unit": "%",
+        "baseline": 15,
+        "hint": "Each 10% increase reduces delay ~0.08 days."
+      },
+      {
+        "id": "material_lead_time_mode",
+        "label": "Material Lead Time Strategy",
+        "group": "Logistics & Delivery",
+        "kind": "mode",
+        "min": 0,
+        "max": 2,
+        "step": 1,
+        "unit": "",
+        "baseline": 0,
+        "modes": [
+          "Current",
+          "Reduced (−20%)",
+          "Optimised (−40%)"
+        ],
+        "hint": "Negotiate faster material delivery contracts."
+      }
+    ]
+  },
+  "report": {
+    "date": "August 31, 2026",
+    "casesAnalysed": 15000,
+    "groundTruthEffect": 6.66,
+    "dmlEffect": 6.65,
+    "confoundingRemoved": 2.13,
+    "naiveDays": 8.78,
+    "achievableReductionPct": 20.5,
+    "baselineDays": 8.2,
+    "targetDays": 6.52,
+    "primaryChain": [
+      "Order Complexity",
+      "Supplier A",
+      "Material Lead Time",
+      "Shipment Delay"
+    ],
+    "signConsistency": "9/9 coefficients sign-certain",
+    "methodology": [
+      {
+        "phase": "Causal Discovery",
+        "detail": "Bootstrapped PC algorithm · Fisher-Z tests at α=0.05 · 20 subsamples × 2,000 rows · 60% edge-stability threshold · domain-knowledge ablation"
+      },
+      {
+        "phase": "Structural Model",
+        "detail": "Mixed SCM — Logistic Regression for binary nodes, Gradient Boosting for the outcome (avoids the Linear Probability Model pitfall)"
+      },
+      {
+        "phase": "Effect Estimation",
+        "detail": "Double ML (Chernozhukov et al. 2018) · 5-fold cross-fitting · GBM nuisance models · Eicker-Huber-White sandwich SEs"
+      },
+      {
+        "phase": "Validation",
+        "detail": "Planted ground-truth coefficients · placebo-treatment & random-common-cause refuters · E-value · CATE across tertiles · 10-seed robustness (mean ± std)"
+      },
+      {
+        "phase": "Attribution",
+        "detail": "SCM-grounded SHAP on structural equations · features split into controllable vs. structural"
+      }
+    ],
+    "actions": [
+      {
+        "rank": 1,
+        "action": "Shift ~25% procurement from Supplier A to Supplier B",
+        "impactPct": 20.5,
+        "confidence": "High",
+        "value": "$479K / yr",
+        "timeline": "Immediate"
+      },
+      {
+        "rank": 2,
+        "action": "Automate export approval + reduce flag routing",
+        "impactPct": 7.5,
+        "confidence": "Medium",
+        "value": "$175K / yr",
+        "timeline": "30 days"
+      },
+      {
+        "rank": 3,
+        "action": "Expand machine buffer capacity (≥20%)",
+        "impactPct": 3.1,
+        "confidence": "High",
+        "value": "$72K / yr",
+        "timeline": "60 days"
+      }
+    ],
+    "totalCapex": 225000,
+    "roiPayback": "3.7 months",
+    "riskLevel": "Medium — supplier contract renegotiation required"
+  },
+  "crossDomain": [
+    {
+      "domain": "Manufacturing",
+      "precision": 1,
+      "recall": 0.89,
+      "f1": 0.94,
+      "naive": 8.78,
+      "causal": 6.65,
+      "planted": 6.66,
+      "eValue": 7.3
+    },
+    {
+      "domain": "Healthcare",
+      "precision": 0.88,
+      "recall": 0.78,
+      "f1": 0.83,
+      "naive": 6.01,
+      "causal": 5.25,
+      "planted": 5.27,
+      "eValue": 7.1
+    }
+  ],
+  "copilot": {
+    "chips": [
+      {
+        "key": "delays",
+        "label": "Why are delays increasing?",
+        "icon": "trend"
+      },
+      {
+        "key": "bottleneck",
+        "label": "What is the top bottleneck?",
+        "icon": "alert"
+      },
+      {
+        "key": "intervention",
+        "label": "Best intervention?",
+        "icon": "bulb"
+      },
+      {
+        "key": "suppliers",
+        "label": "Compare suppliers",
+        "icon": "swap"
+      },
+      {
+        "key": "chain",
+        "label": "Explain causal chain",
+        "icon": "link"
+      },
+      {
+        "key": "impact",
+        "label": "Predict impact of changes",
+        "icon": "chart"
+      },
+      {
+        "key": "executive",
+        "label": "Executive summary",
+        "icon": "doc"
+      }
+    ],
+    "followUps": {
+      "delays": [
+        "Best intervention?",
+        "Explain causal chain",
+        "Predict impact of changes"
+      ],
+      "bottleneck": [
+        "Why are delays increasing?",
+        "Best intervention?",
+        "Compare suppliers"
+      ],
+      "intervention": [
+        "Predict impact of changes",
+        "What are the ROI opportunities?",
+        "Compare suppliers"
+      ],
+      "suppliers": [
+        "Why are delays increasing?",
+        "Best intervention?",
+        "Predict impact of changes"
+      ],
+      "chain": [
+        "What is the top bottleneck?",
+        "Best intervention?",
+        "Executive summary"
+      ],
+      "impact": [
+        "What are the ROI opportunities?",
+        "Executive summary",
+        "Compare suppliers"
+      ],
+      "executive": [
+        "Best intervention?",
+        "What are the ROI opportunities?",
+        "Explain causal chain"
+      ],
+      "custom": [
+        "Best intervention?",
+        "Executive summary",
+        "What is the top bottleneck?"
+      ]
+    },
+    "capabilities": [
+      {
+        "icon": "alert",
+        "title": "What is the top bottleneck?",
+        "detail": "Identify the most impactful constraint",
+        "tags": [
+          "Bottleneck Analysis",
+          "Root Cause"
+        ],
+        "prompt": "What is the top bottleneck?"
+      },
+      {
+        "icon": "chart",
+        "title": "Show causal KPI impact",
+        "detail": "See which factors drive shipment delay",
+        "tags": [
+          "Causal Impact",
+          "KPI Analysis"
+        ],
+        "prompt": "Which factors have the largest causal impact on shipment delay?"
+      },
+      {
+        "icon": "flask",
+        "title": "Run a what-if simulation",
+        "detail": "Test interventions & predict outcomes",
+        "tags": [
+          "Simulation",
+          "Forecasting"
+        ],
+        "prompt": "Predict impact of changes"
+      },
+      {
+        "icon": "doc",
+        "title": "Generate executive summary",
+        "detail": "AI-powered insights & recommendations",
+        "tags": [
+          "AI Summary",
+          "Insights"
+        ],
+        "prompt": "Executive summary"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "id": "ORD_0000",
+      "date": "2024-01-03",
+      "primaryEntity": "Supplier A",
+      "category": "Raw Metal",
+      "value": 22394,
+      "actualDelayDays": 7.1,
+      "predictedDelayDays": -5.8,
+      "counterfactualDelayDays": 0.3,
+      "counterfactualLabel": "If procurement had been re-routed to Supplier B",
+      "drivers": [
+        {
+          "label": "Supplier A Dependency",
+          "contributionDays": -10.66,
+          "kind": "controllable"
+        },
+        {
+          "label": "Approval Duration",
+          "contributionDays": -1.39,
+          "kind": "structural"
+        },
+        {
+          "label": "Express Carrier",
+          "contributionDays": -1.34,
+          "kind": "controllable"
+        },
+        {
+          "label": "Material Lead Time",
+          "contributionDays": -1.09,
+          "kind": "controllable"
+        }
+      ],
+      "similarCaseIds": [
+        "ORD_0021",
+        "ORD_0002",
+        "ORD_0015"
+      ],
+      "populationAvg": 8.2,
+      "percentile": 23,
+      "controllableDays": -13.09,
+      "structuralDays": -1.39,
+      "complexityScore": 1,
+      "treated": true,
+      "dominantDriver": "Supplier A Dependency"
+    },
+    {
+      "id": "ORD_0001",
+      "date": "2024-02-04",
+      "primaryEntity": "Supplier C",
+      "category": "Electronics",
+      "value": 40453,
+      "actualDelayDays": 9.6,
+      "predictedDelayDays": 19,
+      "counterfactualDelayDays": 6.3,
+      "counterfactualLabel": "If procurement had been re-routed to Supplier B",
+      "drivers": [
+        {
+          "label": "Supplier A Dependency",
+          "contributionDays": 4.78,
+          "kind": "controllable"
+        },
+        {
+          "label": "Material Lead Time",
+          "contributionDays": 2.94,
+          "kind": "controllable"
+        },
+        {
+          "label": "Express Carrier",
+          "contributionDays": 1.23,
+          "kind": "controllable"
+        },
+        {
+          "label": "Approval Duration",
+          "contributionDays": 1.07,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ORD_0012",
+        "ORD_0020",
+        "ORD_0031"
+      ],
+      "populationAvg": 8.2,
+      "percentile": 57,
+      "controllableDays": 8.95,
+      "structuralDays": 1.07,
+      "complexityScore": 9,
+      "treated": false,
+      "dominantDriver": "Supplier A Dependency"
+    },
+    {
+      "id": "ORD_0002",
+      "date": "2024-03-05",
+      "primaryEntity": "Supplier D",
+      "category": "Packaging",
+      "value": 62582,
+      "actualDelayDays": 7.4,
+      "predictedDelayDays": 0.6,
+      "counterfactualDelayDays": 4,
+      "counterfactualLabel": "If procurement had been re-routed to Supplier B",
+      "drivers": [
+        {
+          "label": "Supplier A Dependency",
+          "contributionDays": -4.89,
+          "kind": "controllable"
+        },
+        {
+          "label": "Material Lead Time",
+          "contributionDays": -1.95,
+          "kind": "controllable"
+        },
+        {
+          "label": "Express Carrier",
+          "contributionDays": -0.97,
+          "kind": "controllable"
+        },
+        {
+          "label": "Approval Duration",
+          "contributionDays": -0.36,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ORD_0015",
+        "ORD_0039",
+        "ORD_0010"
+      ],
+      "populationAvg": 8.2,
+      "percentile": 25,
+      "controllableDays": -7.81,
+      "structuralDays": -0.36,
+      "complexityScore": 6,
+      "treated": true,
+      "dominantDriver": "Supplier A Dependency"
+    },
+    {
+      "id": "ORD_0003",
+      "date": "2024-04-06",
+      "primaryEntity": "Supplier A",
+      "category": "Raw Metal",
+      "value": 7895,
+      "actualDelayDays": 10.9,
+      "predictedDelayDays": 23.2,
+      "counterfactualDelayDays": 2.9,
+      "counterfactualLabel": "If procurement had been re-routed to Supplier B",
+      "drivers": [
+        {
+          "label": "Supplier A Dependency",
+          "contributionDays": 11.47,
+          "kind": "controllable"
+        },
+        {
+          "label": "Approval Duration",
+          "contributionDays": 1.29,
+          "kind": "structural"
+        },
+        {
+          "label": "Material Lead Time",
+          "contributionDays": 1.24,
+          "kind": "controllable"
+        },
+        {
+          "label": "Express Carrier",
+          "contributionDays": 0.93,
+          "kind": "controllable"
+        }
+      ],
+      "similarCaseIds": [
+        "ORD_0005",
+        "ORD_0037",
+        "ORD_0013"
+      ],
+      "populationAvg": 8.2,
+      "percentile": 85,
+      "controllableDays": 13.64,
+      "structuralDays": 1.29,
+      "complexityScore": 6,
+      "treated": false,
+      "dominantDriver": "Supplier A Dependency"
+    },
+    {
+      "id": "ORD_0004",
+      "date": "2024-05-07",
+      "primaryEntity": "Supplier C",
+      "category": "Raw Metal",
+      "value": 55419,
+      "actualDelayDays": 10,
+      "predictedDelayDays": 23.2,
+      "counterfactualDelayDays": 4.2,
+      "counterfactualLabel": "If procurement had been re-routed to Supplier B",
+      "drivers": [
+        {
+          "label": "Supplier A Dependency",
+          "contributionDays": 8.27,
+          "kind": "controllable"
+        },
+        {
+          "label": "Material Lead Time",
+          "contributionDays": 3,
+          "kind": "controllable"
+        },
+        {
+          "label": "Express Carrier",
+          "contributionDays": 1.66,
+          "kind": "controllable"
+        },
+        {
+          "label": "Approval Duration",
+          "contributionDays": 1.06,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ORD_0032",
+        "ORD_0031",
+        "ORD_0001"
+      ],
+      "populationAvg": 8.2,
+      "percentile": 68,
+      "controllableDays": 12.93,
+      "structuralDays": 1.06,
+      "complexityScore": 6,
+      "treated": false,
+      "dominantDriver": "Supplier A Dependency"
+    },
+    {
+      "id": "ORD_0005",
+      "date": "2024-06-08",
+      "primaryEntity": "Supplier A",
+      "category": "Raw Metal",
+      "value": 56171,
+      "actualDelayDays": 10.8,
+      "predictedDelayDays": 19.5,
+      "counterfactualDelayDays": 7.6,
+      "counterfactualLabel": "If procurement had been re-routed to Supplier B",
+      "drivers": [
+        {
+          "label": "Supplier A Dependency",
+          "contributionDays": 4.62,
+          "kind": "controllable"
+        },
+        {
+          "label": "Material Lead Time",
+          "contributionDays": 2.53,
+          "kind": "controllable"
+        },
+        {
+          "label": "Express Carrier",
+          "contributionDays": 2.44,
+          "kind": "controllable"
+        },
+        {
+          "label": "Approval Duration",
+          "contributionDays": 1.35,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ORD_0003",
+        "ORD_0013",
+        "ORD_0028"
+      ],
+      "populationAvg": 8.2,
+      "percentile": 83,
+      "controllableDays": 9.59,
+      "structuralDays": 1.35,
+      "complexityScore": 8,
+      "treated": false,
+      "dominantDriver": "Supplier A Dependency"
+    },
+    {
+      "id": "ORD_0006",
+      "date": "2024-01-09",
+      "primaryEntity": "Supplier B",
+      "category": "Packaging",
+      "value": 38229,
+      "actualDelayDays": 6.1,
+      "predictedDelayDays": -4,
+      "counterfactualDelayDays": 0.8,
+      "counterfactualLabel": "If procurement had been re-routed to Supplier B",
+      "drivers": [
+        {
+          "label": "Supplier A Dependency",
+          "contributionDays": -7.64,
+          "kind": "controllable"
+        },
+        {
+          "label": "Express Carrier",
+          "contributionDays": -2.42,
+          "kind": "controllable"
+        },
+        {
+          "label": "Material Lead Time",
+          "contributionDays": -1.75,
+          "kind": "controllable"
+        },
+        {
+          "label": "Approval Duration",
+          "contributionDays": -0.54,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ORD_0011",
+        "ORD_0027",
+        "ORD_0008"
+      ],
+      "populationAvg": 8.2,
+      "percentile": 15,
+      "controllableDays": -11.81,
+      "structuralDays": -0.54,
+      "complexityScore": 6,
+      "treated": true,
+      "dominantDriver": "Supplier A Dependency"
+    },
+    {
+      "id": "ORD_0007",
+      "date": "2024-02-10",
+      "primaryEntity": "Supplier C",
+      "category": "Raw Metal",
+      "value": 17429,
+      "actualDelayDays": 7.8,
+      "predictedDelayDays": 2.2,
+      "counterfactualDelayDays": 6.2,
+      "counterfactualLabel": "If procurement had been re-routed to Supplier B",
+      "drivers": [
+        {
+          "label": "Supplier A Dependency",
+          "contributionDays": -2.23,
+          "kind": "controllable"
+        },
+        {
+          "label": "Express Carrier",
+          "contributionDays": -1.52,
+          "kind": "controllable"
+        },
+        {
+          "label": "Material Lead Time",
+          "contributionDays": -1.4,
+          "kind": "controllable"
+        },
+        {
+          "label": "Approval Duration",
+          "contributionDays": -0.39,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ORD_0025",
+        "ORD_0010",
+        "ORD_0009"
+      ],
+      "populationAvg": 8.2,
+      "percentile": 35,
+      "controllableDays": -5.15,
+      "structuralDays": -0.39,
+      "complexityScore": 9,
+      "treated": true,
+      "dominantDriver": "Supplier A Dependency"
+    },
+    {
+      "id": "ORD_0008",
+      "date": "2024-03-11",
+      "primaryEntity": "Supplier B",
+      "category": "Electronics",
+      "value": 83817,
+      "actualDelayDays": 5.6,
+      "predictedDelayDays": 0.7,
+      "counterfactualDelayDays": 2.8,
+      "counterfactualLabel": "If procurement had been re-routed to Supplier B",
+      "drivers": [
+        {
+          "label": "Supplier A Dependency",
+          "contributionDays": -4.06,
+          "kind": "controllable"
+        },
+        {
+          "label": "Material Lead Time",
+          "contributionDays": -1.72,
+          "kind": "controllable"
+        },
+        {
+          "label": "Express Carrier",
+          "contributionDays": -0.88,
+          "kind": "controllable"
+        },
+        {
+          "label": "Approval Duration",
+          "contributionDays": -0.79,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ORD_0030",
+        "ORD_0027",
+        "ORD_0006"
+      ],
+      "populationAvg": 8.2,
+      "percentile": 10,
+      "controllableDays": -6.66,
+      "structuralDays": -0.79,
+      "complexityScore": 7,
+      "treated": true,
+      "dominantDriver": "Supplier A Dependency"
+    },
+    {
+      "id": "ORD_0009",
+      "date": "2024-04-12",
+      "primaryEntity": "Supplier C",
+      "category": "Electronics",
+      "value": 59141,
+      "actualDelayDays": 7.9,
+      "predictedDelayDays": -3.4,
+      "counterfactualDelayDays": 2.6,
+      "counterfactualLabel": "If procurement had been re-routed to Supplier B",
+      "drivers": [
+        {
+          "label": "Supplier A Dependency",
+          "contributionDays": -7.6,
+          "kind": "controllable"
+        },
+        {
+          "label": "Express Carrier",
+          "contributionDays": -2.06,
+          "kind": "controllable"
+        },
+        {
+          "label": "Material Lead Time",
+          "contributionDays": -1.2,
+          "kind": "controllable"
+        },
+        {
+          "label": "Approval Duration",
+          "contributionDays": -0.8,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ORD_0007",
+        "ORD_0025",
+        "ORD_0010"
+      ],
+      "populationAvg": 8.2,
+      "percentile": 40,
+      "controllableDays": -10.86,
+      "structuralDays": -0.8,
+      "complexityScore": 1,
+      "treated": true,
+      "dominantDriver": "Supplier A Dependency"
+    },
+    {
+      "id": "ORD_0010",
+      "date": "2024-05-13",
+      "primaryEntity": "Supplier D",
+      "category": "Assemblies",
+      "value": 47436,
+      "actualDelayDays": 7.7,
+      "predictedDelayDays": -3.7,
+      "counterfactualDelayDays": 2.5,
+      "counterfactualLabel": "If procurement had been re-routed to Supplier B",
+      "drivers": [
+        {
+          "label": "Supplier A Dependency",
+          "contributionDays": -7.45,
+          "kind": "controllable"
+        },
+        {
+          "label": "Express Carrier",
+          "contributionDays": -2.3,
+          "kind": "controllable"
+        },
+        {
+          "label": "Material Lead Time",
+          "contributionDays": -1.31,
+          "kind": "controllable"
+        },
+        {
+          "label": "Approval Duration",
+          "contributionDays": -1.09,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ORD_0007",
+        "ORD_0025",
+        "ORD_0039"
+      ],
+      "populationAvg": 8.2,
+      "percentile": 33,
+      "controllableDays": -11.06,
+      "structuralDays": -1.09,
+      "complexityScore": 2,
+      "treated": false,
+      "dominantDriver": "Supplier A Dependency"
+    },
+    {
+      "id": "ORD_0011",
+      "date": "2024-06-14",
+      "primaryEntity": "Supplier C",
+      "category": "Assemblies",
+      "value": 49178,
+      "actualDelayDays": 6.3,
+      "predictedDelayDays": -3.6,
+      "counterfactualDelayDays": 3.1,
+      "counterfactualLabel": "If procurement had been re-routed to Supplier B",
+      "drivers": [
+        {
+          "label": "Supplier A Dependency",
+          "contributionDays": -4.52,
+          "kind": "controllable"
+        },
+        {
+          "label": "Material Lead Time",
+          "contributionDays": -3.45,
+          "kind": "controllable"
+        },
+        {
+          "label": "Express Carrier",
+          "contributionDays": -2.45,
+          "kind": "controllable"
+        },
+        {
+          "label": "Approval Duration",
+          "contributionDays": -0.74,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ORD_0006",
+        "ORD_0027",
+        "ORD_0021"
+      ],
+      "populationAvg": 8.2,
+      "percentile": 18,
+      "controllableDays": -10.42,
+      "structuralDays": -0.74,
+      "complexityScore": 3,
+      "treated": true,
+      "dominantDriver": "Supplier A Dependency"
+    },
+    {
+      "id": "ORD_0012",
+      "date": "2024-01-15",
+      "primaryEntity": "Supplier D",
+      "category": "Raw Metal",
+      "value": 82872,
+      "actualDelayDays": 9.6,
+      "predictedDelayDays": 19.5,
+      "counterfactualDelayDays": 4,
+      "counterfactualLabel": "If procurement had been re-routed to Supplier B",
+      "drivers": [
+        {
+          "label": "Supplier A Dependency",
+          "contributionDays": 8.06,
+          "kind": "controllable"
+        },
+        {
+          "label": "Express Carrier",
+          "contributionDays": 1.63,
+          "kind": "controllable"
+        },
+        {
+          "label": "Material Lead Time",
+          "contributionDays": 1.15,
+          "kind": "controllable"
+        },
+        {
+          "label": "Approval Duration",
+          "contributionDays": 0.76,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ORD_0001",
+        "ORD_0020",
+        "ORD_0031"
+      ],
+      "populationAvg": 8.2,
+      "percentile": 60,
+      "controllableDays": 10.84,
+      "structuralDays": 0.76,
+      "complexityScore": 4,
+      "treated": false,
+      "dominantDriver": "Supplier A Dependency"
+    },
+    {
+      "id": "ORD_0013",
+      "date": "2024-02-16",
+      "primaryEntity": "Supplier B",
+      "category": "Assemblies",
+      "value": 45146,
+      "actualDelayDays": 10.7,
+      "predictedDelayDays": 19.7,
+      "counterfactualDelayDays": 5.6,
+      "counterfactualLabel": "If procurement had been re-routed to Supplier B",
+      "drivers": [
+        {
+          "label": "Supplier A Dependency",
+          "contributionDays": 7.31,
+          "kind": "controllable"
+        },
+        {
+          "label": "Express Carrier",
+          "contributionDays": 2.37,
+          "kind": "controllable"
+        },
+        {
+          "label": "Material Lead Time",
+          "contributionDays": 1.72,
+          "kind": "controllable"
+        },
+        {
+          "label": "Approval Duration",
+          "contributionDays": 0.51,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ORD_0028",
+        "ORD_0033",
+        "ORD_0005"
+      ],
+      "populationAvg": 8.2,
+      "percentile": 78,
+      "controllableDays": 11.4,
+      "structuralDays": 0.51,
+      "complexityScore": 8,
+      "treated": true,
+      "dominantDriver": "Supplier A Dependency"
+    },
+    {
+      "id": "ORD_0014",
+      "date": "2024-03-17",
+      "primaryEntity": "Supplier B",
+      "category": "Packaging",
+      "value": 4416,
+      "actualDelayDays": 8.7,
+      "predictedDelayDays": 19.9,
+      "counterfactualDelayDays": 4.5,
+      "counterfactualLabel": "If procurement had been re-routed to Supplier B",
+      "drivers": [
+        {
+          "label": "Supplier A Dependency",
+          "contributionDays": 5.97,
+          "kind": "controllable"
+        },
+        {
+          "label": "Material Lead Time",
+          "contributionDays": 2.38,
+          "kind": "controllable"
+        },
+        {
+          "label": "Express Carrier",
+          "contributionDays": 1.75,
+          "kind": "controllable"
+        },
+        {
+          "label": "Approval Duration",
+          "contributionDays": 1.06,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ORD_0036",
+        "ORD_0024",
+        "ORD_0022"
+      ],
+      "populationAvg": 8.2,
+      "percentile": 48,
+      "controllableDays": 10.1,
+      "structuralDays": 1.06,
+      "complexityScore": 9,
+      "treated": false,
+      "dominantDriver": "Supplier A Dependency"
+    },
+    {
+      "id": "ORD_0015",
+      "date": "2024-04-18",
+      "primaryEntity": "Supplier C",
+      "category": "Electronics",
+      "value": 40079,
+      "actualDelayDays": 7.4,
+      "predictedDelayDays": -3.5,
+      "counterfactualDelayDays": 2.1,
+      "counterfactualLabel": "If procurement had been re-routed to Supplier B",
+      "drivers": [
+        {
+          "label": "Supplier A Dependency",
+          "contributionDays": -7.64,
+          "kind": "controllable"
+        },
+        {
+          "label": "Material Lead Time",
+          "contributionDays": -1.86,
+          "kind": "controllable"
+        },
+        {
+          "label": "Express Carrier",
+          "contributionDays": -0.89,
+          "kind": "controllable"
+        },
+        {
+          "label": "Approval Duration",
+          "contributionDays": -0.54,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ORD_0002",
+        "ORD_0039",
+        "ORD_0010"
+      ],
+      "populationAvg": 8.2,
+      "percentile": 28,
+      "controllableDays": -10.39,
+      "structuralDays": -0.54,
+      "complexityScore": 5,
+      "treated": true,
+      "dominantDriver": "Supplier A Dependency"
+    },
+    {
+      "id": "ORD_0016",
+      "date": "2024-05-19",
+      "primaryEntity": "Supplier B",
+      "category": "Raw Metal",
+      "value": 86578,
+      "actualDelayDays": 11.2,
+      "predictedDelayDays": 17.2,
+      "counterfactualDelayDays": 7.2,
+      "counterfactualLabel": "If procurement had been re-routed to Supplier B",
+      "drivers": [
+        {
+          "label": "Supplier A Dependency",
+          "contributionDays": 5.67,
+          "kind": "controllable"
+        },
+        {
+          "label": "Express Carrier",
+          "contributionDays": 1.49,
+          "kind": "controllable"
+        },
+        {
+          "label": "Material Lead Time",
+          "contributionDays": 1.17,
+          "kind": "controllable"
+        },
+        {
+          "label": "Approval Duration",
+          "contributionDays": 0.63,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ORD_0037",
+        "ORD_0003",
+        "ORD_0005"
+      ],
+      "populationAvg": 8.2,
+      "percentile": 90,
+      "controllableDays": 8.33,
+      "structuralDays": 0.63,
+      "complexityScore": 4,
+      "treated": true,
+      "dominantDriver": "Supplier A Dependency"
+    },
+    {
+      "id": "ORD_0017",
+      "date": "2024-06-20",
+      "primaryEntity": "Supplier C",
+      "category": "Fasteners",
+      "value": 33463,
+      "actualDelayDays": 14.7,
+      "predictedDelayDays": 19.3,
+      "counterfactualDelayDays": 10,
+      "counterfactualLabel": "If procurement had been re-routed to Supplier B",
+      "drivers": [
+        {
+          "label": "Supplier A Dependency",
+          "contributionDays": 6.71,
+          "kind": "controllable"
+        },
+        {
+          "label": "Material Lead Time",
+          "contributionDays": 1.89,
+          "kind": "controllable"
+        },
+        {
+          "label": "Express Carrier",
+          "contributionDays": 1.58,
+          "kind": "controllable"
+        },
+        {
+          "label": "Approval Duration",
+          "contributionDays": 1.13,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ORD_0029",
+        "ORD_0035",
+        "ORD_0038"
+      ],
+      "populationAvg": 8.2,
+      "percentile": 100,
+      "controllableDays": 10.18,
+      "structuralDays": 1.13,
+      "complexityScore": 8,
+      "treated": true,
+      "dominantDriver": "Supplier A Dependency"
+    },
+    {
+      "id": "ORD_0018",
+      "date": "2024-01-21",
+      "primaryEntity": "Supplier B",
+      "category": "Packaging",
+      "value": 49366,
+      "actualDelayDays": 9.4,
+      "predictedDelayDays": 19.1,
+      "counterfactualDelayDays": 4.8,
+      "counterfactualLabel": "If procurement had been re-routed to Supplier B",
+      "drivers": [
+        {
+          "label": "Supplier A Dependency",
+          "contributionDays": 6.64,
+          "kind": "controllable"
+        },
+        {
+          "label": "Material Lead Time",
+          "contributionDays": 1.53,
+          "kind": "controllable"
+        },
+        {
+          "label": "Approval Duration",
+          "contributionDays": 1.1,
+          "kind": "structural"
+        },
+        {
+          "label": "Express Carrier",
+          "contributionDays": 1.06,
+          "kind": "controllable"
+        }
+      ],
+      "similarCaseIds": [
+        "ORD_0001",
+        "ORD_0012",
+        "ORD_0020"
+      ],
+      "populationAvg": 8.2,
+      "percentile": 55,
+      "controllableDays": 9.23,
+      "structuralDays": 1.1,
+      "complexityScore": 7,
+      "treated": true,
+      "dominantDriver": "Supplier A Dependency"
+    },
+    {
+      "id": "ORD_0019",
+      "date": "2024-02-22",
+      "primaryEntity": "Supplier A",
+      "category": "Assemblies",
+      "value": 27594,
+      "actualDelayDays": 10.5,
+      "predictedDelayDays": 23,
+      "counterfactualDelayDays": 4.3,
+      "counterfactualLabel": "If procurement had been re-routed to Supplier B",
+      "drivers": [
+        {
+          "label": "Supplier A Dependency",
+          "contributionDays": 8.8,
+          "kind": "controllable"
+        },
+        {
+          "label": "Material Lead Time",
+          "contributionDays": 3.21,
+          "kind": "controllable"
+        },
+        {
+          "label": "Express Carrier",
+          "contributionDays": 1.51,
+          "kind": "controllable"
+        },
+        {
+          "label": "Approval Duration",
+          "contributionDays": 0.65,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ORD_0033",
+        "ORD_0013",
+        "ORD_0028"
+      ],
+      "populationAvg": 8.2,
+      "percentile": 73,
+      "controllableDays": 13.52,
+      "structuralDays": 0.65,
+      "complexityScore": 3,
+      "treated": true,
+      "dominantDriver": "Supplier A Dependency"
+    },
+    {
+      "id": "ORD_0020",
+      "date": "2024-03-23",
+      "primaryEntity": "Supplier A",
+      "category": "Fasteners",
+      "value": 4166,
+      "actualDelayDays": 9.6,
+      "predictedDelayDays": 15.5,
+      "counterfactualDelayDays": 7.2,
+      "counterfactualLabel": "If procurement had been re-routed to Supplier B",
+      "drivers": [
+        {
+          "label": "Supplier A Dependency",
+          "contributionDays": 3.45,
+          "kind": "controllable"
+        },
+        {
+          "label": "Express Carrier",
+          "contributionDays": 1.77,
+          "kind": "controllable"
+        },
+        {
+          "label": "Material Lead Time",
+          "contributionDays": 1.11,
+          "kind": "controllable"
+        },
+        {
+          "label": "Approval Duration",
+          "contributionDays": 0.84,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ORD_0001",
+        "ORD_0012",
+        "ORD_0031"
+      ],
+      "populationAvg": 8.2,
+      "percentile": 63,
+      "controllableDays": 6.33,
+      "structuralDays": 0.84,
+      "complexityScore": 3,
+      "treated": true,
+      "dominantDriver": "Supplier A Dependency"
+    },
+    {
+      "id": "ORD_0021",
+      "date": "2024-04-24",
+      "primaryEntity": "Supplier D",
+      "category": "Fasteners",
+      "value": 40231,
+      "actualDelayDays": 6.9,
+      "predictedDelayDays": 0.7,
+      "counterfactualDelayDays": 4.4,
+      "counterfactualLabel": "If procurement had been re-routed to Supplier B",
+      "drivers": [
+        {
+          "label": "Supplier A Dependency",
+          "contributionDays": -3.59,
+          "kind": "controllable"
+        },
+        {
+          "label": "Material Lead Time",
+          "contributionDays": -1.55,
+          "kind": "controllable"
+        },
+        {
+          "label": "Approval Duration",
+          "contributionDays": -1.22,
+          "kind": "structural"
+        },
+        {
+          "label": "Express Carrier",
+          "contributionDays": -0.9,
+          "kind": "controllable"
+        }
+      ],
+      "similarCaseIds": [
+        "ORD_0000",
+        "ORD_0002",
+        "ORD_0015"
+      ],
+      "populationAvg": 8.2,
+      "percentile": 20,
+      "controllableDays": -6.04,
+      "structuralDays": -1.22,
+      "complexityScore": 5,
+      "treated": true,
+      "dominantDriver": "Supplier A Dependency"
+    },
+    {
+      "id": "ORD_0022",
+      "date": "2024-05-25",
+      "primaryEntity": "Supplier D",
+      "category": "Packaging",
+      "value": 59191,
+      "actualDelayDays": 9.1,
+      "predictedDelayDays": 15.6,
+      "counterfactualDelayDays": 6.6,
+      "counterfactualLabel": "If procurement had been re-routed to Supplier B",
+      "drivers": [
+        {
+          "label": "Supplier A Dependency",
+          "contributionDays": 3.52,
+          "kind": "controllable"
+        },
+        {
+          "label": "Material Lead Time",
+          "contributionDays": 2.37,
+          "kind": "controllable"
+        },
+        {
+          "label": "Approval Duration",
+          "contributionDays": 1.03,
+          "kind": "structural"
+        },
+        {
+          "label": "Express Carrier",
+          "contributionDays": 0.57,
+          "kind": "controllable"
+        }
+      ],
+      "similarCaseIds": [
+        "ORD_0026",
+        "ORD_0018",
+        "ORD_0014"
+      ],
+      "populationAvg": 8.2,
+      "percentile": 50,
+      "controllableDays": 6.46,
+      "structuralDays": 1.03,
+      "complexityScore": 8,
+      "treated": true,
+      "dominantDriver": "Supplier A Dependency"
+    },
+    {
+      "id": "ORD_0023",
+      "date": "2024-06-26",
+      "primaryEntity": "Supplier B",
+      "category": "Packaging",
+      "value": 64088,
+      "actualDelayDays": 0.9,
+      "predictedDelayDays": -4.9,
+      "counterfactualDelayDays": 0.3,
+      "counterfactualLabel": "If procurement had been re-routed to Supplier B",
+      "drivers": [
+        {
+          "label": "Supplier A Dependency",
+          "contributionDays": -8.05,
+          "kind": "controllable"
+        },
+        {
+          "label": "Material Lead Time",
+          "contributionDays": -2.44,
+          "kind": "controllable"
+        },
+        {
+          "label": "Express Carrier",
+          "contributionDays": -1.11,
+          "kind": "controllable"
+        },
+        {
+          "label": "Approval Duration",
+          "contributionDays": -1.11,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ORD_0034",
+        "ORD_0030",
+        "ORD_0008"
+      ],
+      "populationAvg": 8.2,
+      "percentile": 3,
+      "controllableDays": -11.6,
+      "structuralDays": -1.11,
+      "complexityScore": 1,
+      "treated": true,
+      "dominantDriver": "Supplier A Dependency"
+    },
+    {
+      "id": "ORD_0024",
+      "date": "2024-01-03",
+      "primaryEntity": "Supplier D",
+      "category": "Packaging",
+      "value": 39687,
+      "actualDelayDays": 8.5,
+      "predictedDelayDays": 16.9,
+      "counterfactualDelayDays": 5.8,
+      "counterfactualLabel": "If procurement had been re-routed to Supplier B",
+      "drivers": [
+        {
+          "label": "Supplier A Dependency",
+          "contributionDays": 3.85,
+          "kind": "controllable"
+        },
+        {
+          "label": "Express Carrier",
+          "contributionDays": 2.02,
+          "kind": "controllable"
+        },
+        {
+          "label": "Material Lead Time",
+          "contributionDays": 1.84,
+          "kind": "controllable"
+        },
+        {
+          "label": "Approval Duration",
+          "contributionDays": 1.42,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ORD_0036",
+        "ORD_0014",
+        "ORD_0009"
+      ],
+      "populationAvg": 8.2,
+      "percentile": 43,
+      "controllableDays": 7.71,
+      "structuralDays": 1.42,
+      "complexityScore": 10,
+      "treated": true,
+      "dominantDriver": "Supplier A Dependency"
+    },
+    {
+      "id": "ORD_0025",
+      "date": "2024-02-04",
+      "primaryEntity": "Supplier A",
+      "category": "Packaging",
+      "value": 12848,
+      "actualDelayDays": 7.8,
+      "predictedDelayDays": -7.3,
+      "counterfactualDelayDays": 0.3,
+      "counterfactualLabel": "If procurement had been re-routed to Supplier B",
+      "drivers": [
+        {
+          "label": "Supplier A Dependency",
+          "contributionDays": -11.04,
+          "kind": "controllable"
+        },
+        {
+          "label": "Material Lead Time",
+          "contributionDays": -1.91,
+          "kind": "controllable"
+        },
+        {
+          "label": "Express Carrier",
+          "contributionDays": -1.78,
+          "kind": "controllable"
+        },
+        {
+          "label": "Approval Duration",
+          "contributionDays": -0.37,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ORD_0007",
+        "ORD_0010",
+        "ORD_0009"
+      ],
+      "populationAvg": 8.2,
+      "percentile": 38,
+      "controllableDays": -14.73,
+      "structuralDays": -0.37,
+      "complexityScore": 1,
+      "treated": false,
+      "dominantDriver": "Supplier A Dependency"
+    },
+    {
+      "id": "ORD_0026",
+      "date": "2024-03-05",
+      "primaryEntity": "Supplier D",
+      "category": "Raw Metal",
+      "value": 28281,
+      "actualDelayDays": 9.2,
+      "predictedDelayDays": 22.1,
+      "counterfactualDelayDays": 3.5,
+      "counterfactualLabel": "If procurement had been re-routed to Supplier B",
+      "drivers": [
+        {
+          "label": "Supplier A Dependency",
+          "contributionDays": 8.19,
+          "kind": "controllable"
+        },
+        {
+          "label": "Material Lead Time",
+          "contributionDays": 3.71,
+          "kind": "controllable"
+        },
+        {
+          "label": "Approval Duration",
+          "contributionDays": 0.97,
+          "kind": "structural"
+        },
+        {
+          "label": "Express Carrier",
+          "contributionDays": 0.76,
+          "kind": "controllable"
+        }
+      ],
+      "similarCaseIds": [
+        "ORD_0022",
+        "ORD_0018",
+        "ORD_0001"
+      ],
+      "populationAvg": 8.2,
+      "percentile": 53,
+      "controllableDays": 12.66,
+      "structuralDays": 0.97,
+      "complexityScore": 3,
+      "treated": false,
+      "dominantDriver": "Supplier A Dependency"
+    },
+    {
+      "id": "ORD_0027",
+      "date": "2024-04-06",
+      "primaryEntity": "Supplier D",
+      "category": "Raw Metal",
+      "value": 77869,
+      "actualDelayDays": 5.8,
+      "predictedDelayDays": -4.7,
+      "counterfactualDelayDays": 1,
+      "counterfactualLabel": "If procurement had been re-routed to Supplier B",
+      "drivers": [
+        {
+          "label": "Supplier A Dependency",
+          "contributionDays": -6.91,
+          "kind": "controllable"
+        },
+        {
+          "label": "Material Lead Time",
+          "contributionDays": -3.23,
+          "kind": "controllable"
+        },
+        {
+          "label": "Express Carrier",
+          "contributionDays": -1.23,
+          "kind": "controllable"
+        },
+        {
+          "label": "Approval Duration",
+          "contributionDays": -1.17,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ORD_0008",
+        "ORD_0006",
+        "ORD_0030"
+      ],
+      "populationAvg": 8.2,
+      "percentile": 13,
+      "controllableDays": -11.37,
+      "structuralDays": -1.17,
+      "complexityScore": 5,
+      "treated": true,
+      "dominantDriver": "Supplier A Dependency"
+    },
+    {
+      "id": "ORD_0028",
+      "date": "2024-05-07",
+      "primaryEntity": "Supplier C",
+      "category": "Fasteners",
+      "value": 51671,
+      "actualDelayDays": 10.7,
+      "predictedDelayDays": 17.5,
+      "counterfactualDelayDays": 6.9,
+      "counterfactualLabel": "If procurement had been re-routed to Supplier B",
+      "drivers": [
+        {
+          "label": "Supplier A Dependency",
+          "contributionDays": 5.43,
+          "kind": "controllable"
+        },
+        {
+          "label": "Express Carrier",
+          "contributionDays": 1.52,
+          "kind": "controllable"
+        },
+        {
+          "label": "Material Lead Time",
+          "contributionDays": 1.16,
+          "kind": "controllable"
+        },
+        {
+          "label": "Approval Duration",
+          "contributionDays": 0.48,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ORD_0013",
+        "ORD_0033",
+        "ORD_0005"
+      ],
+      "populationAvg": 8.2,
+      "percentile": 80,
+      "controllableDays": 8.11,
+      "structuralDays": 0.48,
+      "complexityScore": 10,
+      "treated": true,
+      "dominantDriver": "Supplier A Dependency"
+    },
+    {
+      "id": "ORD_0029",
+      "date": "2024-06-08",
+      "primaryEntity": "Supplier A",
+      "category": "Raw Metal",
+      "value": 89615,
+      "actualDelayDays": 13.9,
+      "predictedDelayDays": 23.4,
+      "counterfactualDelayDays": 5.9,
+      "counterfactualLabel": "If procurement had been re-routed to Supplier B",
+      "drivers": [
+        {
+          "label": "Supplier A Dependency",
+          "contributionDays": 11.39,
+          "kind": "controllable"
+        },
+        {
+          "label": "Material Lead Time",
+          "contributionDays": 2.23,
+          "kind": "controllable"
+        },
+        {
+          "label": "Express Carrier",
+          "contributionDays": 1.24,
+          "kind": "controllable"
+        },
+        {
+          "label": "Approval Duration",
+          "contributionDays": 0.47,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ORD_0017",
+        "ORD_0035",
+        "ORD_0038"
+      ],
+      "populationAvg": 8.2,
+      "percentile": 98,
+      "controllableDays": 14.86,
+      "structuralDays": 0.47,
+      "complexityScore": 10,
+      "treated": true,
+      "dominantDriver": "Supplier A Dependency"
+    },
+    {
+      "id": "ORD_0030",
+      "date": "2024-01-09",
+      "primaryEntity": "Supplier A",
+      "category": "Electronics",
+      "value": 46694,
+      "actualDelayDays": 5.5,
+      "predictedDelayDays": -4.5,
+      "counterfactualDelayDays": 0.3,
+      "counterfactualLabel": "If procurement had been re-routed to Supplier B",
+      "drivers": [
+        {
+          "label": "Supplier A Dependency",
+          "contributionDays": -8.14,
+          "kind": "controllable"
+        },
+        {
+          "label": "Material Lead Time",
+          "contributionDays": -2.06,
+          "kind": "controllable"
+        },
+        {
+          "label": "Express Carrier",
+          "contributionDays": -1.59,
+          "kind": "controllable"
+        },
+        {
+          "label": "Approval Duration",
+          "contributionDays": -0.66,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ORD_0008",
+        "ORD_0027",
+        "ORD_0006"
+      ],
+      "populationAvg": 8.2,
+      "percentile": 8,
+      "controllableDays": -11.79,
+      "structuralDays": -0.66,
+      "complexityScore": 2,
+      "treated": true,
+      "dominantDriver": "Supplier A Dependency"
+    },
+    {
+      "id": "ORD_0031",
+      "date": "2024-02-10",
+      "primaryEntity": "Supplier D",
+      "category": "Assemblies",
+      "value": 50044,
+      "actualDelayDays": 9.7,
+      "predictedDelayDays": 21.2,
+      "counterfactualDelayDays": 3.9,
+      "counterfactualLabel": "If procurement had been re-routed to Supplier B",
+      "drivers": [
+        {
+          "label": "Supplier A Dependency",
+          "contributionDays": 8.27,
+          "kind": "controllable"
+        },
+        {
+          "label": "Material Lead Time",
+          "contributionDays": 3.38,
+          "kind": "controllable"
+        },
+        {
+          "label": "Express Carrier",
+          "contributionDays": 0.66,
+          "kind": "controllable"
+        },
+        {
+          "label": "Approval Duration",
+          "contributionDays": 0.53,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ORD_0001",
+        "ORD_0012",
+        "ORD_0020"
+      ],
+      "populationAvg": 8.2,
+      "percentile": 65,
+      "controllableDays": 12.31,
+      "structuralDays": 0.53,
+      "complexityScore": 4,
+      "treated": true,
+      "dominantDriver": "Supplier A Dependency"
+    },
+    {
+      "id": "ORD_0032",
+      "date": "2024-03-11",
+      "primaryEntity": "Supplier C",
+      "category": "Electronics",
+      "value": 59089,
+      "actualDelayDays": 10,
+      "predictedDelayDays": 21.1,
+      "counterfactualDelayDays": 4.4,
+      "counterfactualLabel": "If procurement had been re-routed to Supplier B",
+      "drivers": [
+        {
+          "label": "Supplier A Dependency",
+          "contributionDays": 8.01,
+          "kind": "controllable"
+        },
+        {
+          "label": "Material Lead Time",
+          "contributionDays": 1.97,
+          "kind": "controllable"
+        },
+        {
+          "label": "Express Carrier",
+          "contributionDays": 1.45,
+          "kind": "controllable"
+        },
+        {
+          "label": "Approval Duration",
+          "contributionDays": 0.68,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ORD_0004",
+        "ORD_0031",
+        "ORD_0001"
+      ],
+      "populationAvg": 8.2,
+      "percentile": 70,
+      "controllableDays": 11.43,
+      "structuralDays": 0.68,
+      "complexityScore": 4,
+      "treated": false,
+      "dominantDriver": "Supplier A Dependency"
+    },
+    {
+      "id": "ORD_0033",
+      "date": "2024-04-12",
+      "primaryEntity": "Supplier C",
+      "category": "Packaging",
+      "value": 15975,
+      "actualDelayDays": 10.6,
+      "predictedDelayDays": 17.2,
+      "counterfactualDelayDays": 6.3,
+      "counterfactualLabel": "If procurement had been re-routed to Supplier B",
+      "drivers": [
+        {
+          "label": "Supplier A Dependency",
+          "contributionDays": 6.12,
+          "kind": "controllable"
+        },
+        {
+          "label": "Material Lead Time",
+          "contributionDays": 1.53,
+          "kind": "controllable"
+        },
+        {
+          "label": "Approval Duration",
+          "contributionDays": 0.99,
+          "kind": "structural"
+        },
+        {
+          "label": "Express Carrier",
+          "contributionDays": 0.77,
+          "kind": "controllable"
+        }
+      ],
+      "similarCaseIds": [
+        "ORD_0013",
+        "ORD_0019",
+        "ORD_0028"
+      ],
+      "populationAvg": 8.2,
+      "percentile": 75,
+      "controllableDays": 8.42,
+      "structuralDays": 0.99,
+      "complexityScore": 7,
+      "treated": true,
+      "dominantDriver": "Supplier A Dependency"
+    },
+    {
+      "id": "ORD_0034",
+      "date": "2024-05-13",
+      "primaryEntity": "Supplier B",
+      "category": "Electronics",
+      "value": 21742,
+      "actualDelayDays": 4.3,
+      "predictedDelayDays": -3.5,
+      "counterfactualDelayDays": 0.3,
+      "counterfactualLabel": "If procurement had been re-routed to Supplier B",
+      "drivers": [
+        {
+          "label": "Supplier A Dependency",
+          "contributionDays": -7.1,
+          "kind": "controllable"
+        },
+        {
+          "label": "Express Carrier",
+          "contributionDays": -1.65,
+          "kind": "controllable"
+        },
+        {
+          "label": "Approval Duration",
+          "contributionDays": -1.22,
+          "kind": "structural"
+        },
+        {
+          "label": "Material Lead Time",
+          "contributionDays": -0.94,
+          "kind": "controllable"
+        }
+      ],
+      "similarCaseIds": [
+        "ORD_0030",
+        "ORD_0008",
+        "ORD_0027"
+      ],
+      "populationAvg": 8.2,
+      "percentile": 5,
+      "controllableDays": -9.69,
+      "structuralDays": -1.22,
+      "complexityScore": 1,
+      "treated": true,
+      "dominantDriver": "Supplier A Dependency"
+    },
+    {
+      "id": "ORD_0035",
+      "date": "2024-06-14",
+      "primaryEntity": "Supplier A",
+      "category": "Raw Metal",
+      "value": 19789,
+      "actualDelayDays": 13.1,
+      "predictedDelayDays": 17.7,
+      "counterfactualDelayDays": 10.3,
+      "counterfactualLabel": "If procurement had been re-routed to Supplier B",
+      "drivers": [
+        {
+          "label": "Supplier A Dependency",
+          "contributionDays": 4.02,
+          "kind": "controllable"
+        },
+        {
+          "label": "Material Lead Time",
+          "contributionDays": 3.21,
+          "kind": "controllable"
+        },
+        {
+          "label": "Approval Duration",
+          "contributionDays": 1.11,
+          "kind": "structural"
+        },
+        {
+          "label": "Express Carrier",
+          "contributionDays": 1.1,
+          "kind": "controllable"
+        }
+      ],
+      "similarCaseIds": [
+        "ORD_0029",
+        "ORD_0038",
+        "ORD_0017"
+      ],
+      "populationAvg": 8.2,
+      "percentile": 95,
+      "controllableDays": 8.33,
+      "structuralDays": 1.11,
+      "complexityScore": 8,
+      "treated": true,
+      "dominantDriver": "Supplier A Dependency"
+    },
+    {
+      "id": "ORD_0036",
+      "date": "2024-01-15",
+      "primaryEntity": "Supplier C",
+      "category": "Assemblies",
+      "value": 19183,
+      "actualDelayDays": 8.6,
+      "predictedDelayDays": 21,
+      "counterfactualDelayDays": 3.3,
+      "counterfactualLabel": "If procurement had been re-routed to Supplier B",
+      "drivers": [
+        {
+          "label": "Supplier A Dependency",
+          "contributionDays": 7.56,
+          "kind": "controllable"
+        },
+        {
+          "label": "Material Lead Time",
+          "contributionDays": 2.75,
+          "kind": "controllable"
+        },
+        {
+          "label": "Express Carrier",
+          "contributionDays": 1.15,
+          "kind": "controllable"
+        },
+        {
+          "label": "Approval Duration",
+          "contributionDays": 1.14,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ORD_0014",
+        "ORD_0024",
+        "ORD_0022"
+      ],
+      "populationAvg": 8.2,
+      "percentile": 45,
+      "controllableDays": 11.46,
+      "structuralDays": 1.14,
+      "complexityScore": 8,
+      "treated": true,
+      "dominantDriver": "Supplier A Dependency"
+    },
+    {
+      "id": "ORD_0037",
+      "date": "2024-02-16",
+      "primaryEntity": "Supplier B",
+      "category": "Assemblies",
+      "value": 26544,
+      "actualDelayDays": 11,
+      "predictedDelayDays": 23.4,
+      "counterfactualDelayDays": 5.2,
+      "counterfactualLabel": "If procurement had been re-routed to Supplier B",
+      "drivers": [
+        {
+          "label": "Supplier A Dependency",
+          "contributionDays": 8.22,
+          "kind": "controllable"
+        },
+        {
+          "label": "Express Carrier",
+          "contributionDays": 2.38,
+          "kind": "controllable"
+        },
+        {
+          "label": "Material Lead Time",
+          "contributionDays": 2.17,
+          "kind": "controllable"
+        },
+        {
+          "label": "Approval Duration",
+          "contributionDays": 1.43,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ORD_0003",
+        "ORD_0005",
+        "ORD_0016"
+      ],
+      "populationAvg": 8.2,
+      "percentile": 88,
+      "controllableDays": 12.77,
+      "structuralDays": 1.43,
+      "complexityScore": 9,
+      "treated": true,
+      "dominantDriver": "Supplier A Dependency"
+    },
+    {
+      "id": "ORD_0038",
+      "date": "2024-03-17",
+      "primaryEntity": "Supplier A",
+      "category": "Assemblies",
+      "value": 58201,
+      "actualDelayDays": 11.6,
+      "predictedDelayDays": 23.3,
+      "counterfactualDelayDays": 4.2,
+      "counterfactualLabel": "If procurement had been re-routed to Supplier B",
+      "drivers": [
+        {
+          "label": "Supplier A Dependency",
+          "contributionDays": 10.53,
+          "kind": "controllable"
+        },
+        {
+          "label": "Material Lead Time",
+          "contributionDays": 2.13,
+          "kind": "controllable"
+        },
+        {
+          "label": "Approval Duration",
+          "contributionDays": 1.44,
+          "kind": "structural"
+        },
+        {
+          "label": "Express Carrier",
+          "contributionDays": 0.93,
+          "kind": "controllable"
+        }
+      ],
+      "similarCaseIds": [
+        "ORD_0016",
+        "ORD_0037",
+        "ORD_0003"
+      ],
+      "populationAvg": 8.2,
+      "percentile": 93,
+      "controllableDays": 13.59,
+      "structuralDays": 1.44,
+      "complexityScore": 6,
+      "treated": false,
+      "dominantDriver": "Supplier A Dependency"
+    },
+    {
+      "id": "ORD_0039",
+      "date": "2024-04-18",
+      "primaryEntity": "Supplier A",
+      "category": "Fasteners",
+      "value": 26026,
+      "actualDelayDays": 7.6,
+      "predictedDelayDays": -5.2,
+      "counterfactualDelayDays": 2,
+      "counterfactualLabel": "If procurement had been re-routed to Supplier B",
+      "drivers": [
+        {
+          "label": "Supplier A Dependency",
+          "contributionDays": -8.04,
+          "kind": "controllable"
+        },
+        {
+          "label": "Material Lead Time",
+          "contributionDays": -2.16,
+          "kind": "controllable"
+        },
+        {
+          "label": "Express Carrier",
+          "contributionDays": -1.96,
+          "kind": "controllable"
+        },
+        {
+          "label": "Approval Duration",
+          "contributionDays": -0.53,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ORD_0010",
+        "ORD_0002",
+        "ORD_0015"
+      ],
+      "populationAvg": 8.2,
+      "percentile": 30,
+      "controllableDays": -12.16,
+      "structuralDays": -0.53,
+      "complexityScore": 2,
+      "treated": true,
+      "dominantDriver": "Supplier A Dependency"
+    }
+  ]
+}

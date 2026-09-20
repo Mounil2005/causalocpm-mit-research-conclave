@@ -1,0 +1,17 @@
+Autonomous PC (use_domain_knowledge=False) vs + domain knowledge
+Run: discover_dag() + compare_to_ground_truth() on both 15,000-row logs, seed 42.
+
+=== MANUFACTURING (9 planted edges) ===
+  Autonomous PC : precision 1.000  recall 0.889  F1 0.941   (8 TP, 0 FP, 1 FN)
+  + Domain knowledge: precision 1.000  recall 1.000  F1 1.000
+  Missed by PC: order_complexity -> supplier_a   (nonlinear sigmoid, steepness 0.7)
+
+=== HEALTHCARE (9 planted edges) ===
+  Autonomous PC : precision 0.875  recall 0.778  F1 0.824   (7 TP, 1 FP, 2 FN)
+  + Domain knowledge: precision 1.000  recall 1.000  F1 1.000
+  Missed by PC : approval_wait -> length_of_stay ; bed_occupancy_rate -> approval_wait
+  Spurious (PC): length_of_stay -> approval_wait  (correct pair, arrow reversed)
+
+The validate.py report above only checks the +domain-knowledge DAG (recall 1.00,
+F1 1.00). These pre-domain-knowledge numbers are what the console's "Autonomous PC"
+toggle and the Pipeline Performance Summary report.

@@ -1,0 +1,3427 @@
+{
+  "domain": "healthcare",
+  "generatedAt": "2024-06-30T09:00:00.000Z",
+  "spuriousEdgeReason": "approval wait and length of stay are strongly correlated through the shared mediated path, and PC oriented the edge the wrong way (LOS → approval wait). The constraint 'approval happens before discharge' flips it back.",
+  "narrative": {
+    "agentName": "Care Coordination Agent",
+    "agentRole": "autonomously assigns a specialist consult for each admission",
+    "decisionLabel": "Assigned a specialist",
+    "altLabel": "no specialist / hospitalist pathway",
+    "outcomeLabel": "Discharge delayed",
+    "agentSignals": [
+      {
+        "label": "Presenting diagnosis severity",
+        "weight": 0.38
+      },
+      {
+        "label": "Specialist availability",
+        "weight": 0.29
+      },
+      {
+        "label": "Bed pressure on the ward",
+        "weight": 0.2
+      },
+      {
+        "label": "Patient comorbidity index",
+        "weight": 0.13
+      }
+    ],
+    "agentBlindSpots": [
+      "Complex patients are both more likely to get a specialist and inherently stay longer — a confounded path",
+      "The specialist's effect runs through Treatment Duration, not the referral decision itself",
+      "Historical LOS for specialist patients is confounded by who gets referred"
+    ],
+    "stages": [
+      {
+        "id": "admission",
+        "label": "Admission"
+      },
+      {
+        "id": "triage",
+        "label": "Triage",
+        "agent": "Triage Agent"
+      },
+      {
+        "id": "specialist",
+        "label": "Specialist",
+        "agent": "Care Coordination Agent"
+      },
+      {
+        "id": "diagnostics",
+        "label": "Diagnostics"
+      },
+      {
+        "id": "discharge",
+        "label": "Discharge",
+        "agent": "Discharge Agent"
+      }
+    ],
+    "incident": {
+      "trigger": "Specialist consult ordered for a high-complexity admission",
+      "steps": [
+        {
+          "stageId": "specialist",
+          "t": "Day 0 14:20",
+          "note": "Care Coordination Agent assigns cardiology consult",
+          "sev": "warn"
+        },
+        {
+          "stageId": "diagnostics",
+          "t": "Day 1 09:10",
+          "note": "Treatment duration extends 6.2 d on the specialist arm",
+          "sev": "warn"
+        },
+        {
+          "stageId": "discharge",
+          "t": "Day 2",
+          "note": "Downstream bed queue grows",
+          "sev": "warn"
+        },
+        {
+          "stageId": "discharge",
+          "t": "Day 5",
+          "note": "Discharge slips — 5.3 d longer stay",
+          "sev": "crit"
+        }
+      ]
+    }
+  },
+  "story": {
+    "incidentId": "ADM-7731",
+    "caseId": "ADM_0023",
+    "trigger": "Specialist consult ordered for a high-complexity admission",
+    "outcomeVariable": "Length of Stay",
+    "outcomeUnit": "days",
+    "agent": {
+      "name": "Care Coordination Agent",
+      "role": "autonomously assigns a specialist consult for each admission",
+      "decision": "Assigned a specialist",
+      "alt": "no specialist / hospitalist pathway",
+      "confidencePct": 93,
+      "signals": [
+        {
+          "label": "Presenting diagnosis severity",
+          "weight": 0.38
+        },
+        {
+          "label": "Specialist availability",
+          "weight": 0.29
+        },
+        {
+          "label": "Bed pressure on the ward",
+          "weight": 0.2
+        },
+        {
+          "label": "Patient comorbidity index",
+          "weight": 0.13
+        }
+      ],
+      "blindSpots": [
+        "Complex patients are both more likely to get a specialist and inherently stay longer — a confounded path",
+        "The specialist's effect runs through Treatment Duration, not the referral decision itself",
+        "Historical LOS for specialist patients is confounded by who gets referred"
+      ]
+    },
+    "ripple": {
+      "stages": [
+        {
+          "id": "admission",
+          "label": "Admission"
+        },
+        {
+          "id": "triage",
+          "label": "Triage",
+          "agent": "Triage Agent"
+        },
+        {
+          "id": "specialist",
+          "label": "Specialist",
+          "agent": "Care Coordination Agent"
+        },
+        {
+          "id": "diagnostics",
+          "label": "Diagnostics"
+        },
+        {
+          "id": "discharge",
+          "label": "Discharge",
+          "agent": "Discharge Agent"
+        }
+      ],
+      "steps": [
+        {
+          "stageId": "specialist",
+          "t": "Day 0 14:20",
+          "note": "Care Coordination Agent assigns cardiology consult",
+          "sev": "warn"
+        },
+        {
+          "stageId": "diagnostics",
+          "t": "Day 1 09:10",
+          "note": "Treatment duration extends 6.2 d on the specialist arm",
+          "sev": "warn"
+        },
+        {
+          "stageId": "discharge",
+          "t": "Day 2",
+          "note": "Downstream bed queue grows",
+          "sev": "warn"
+        },
+        {
+          "stageId": "discharge",
+          "t": "Day 5",
+          "note": "Discharge slips — 5.3 d longer stay",
+          "sev": "crit"
+        }
+      ],
+      "finalDelayDays": 10.9
+    },
+    "cause": {
+      "path": [
+        "Patient Complexity",
+        "Specialist Assignment",
+        "Treatment Duration",
+        "Length of Stay"
+      ],
+      "effectDays": 5.25,
+      "naiveDays": 6.01,
+      "trueDays": 5.27,
+      "confounderLabel": "Patient Complexity",
+      "confoundingDays": 0.76,
+      "confoundingPct": 12.6,
+      "drivers": [
+        {
+          "label": "Specialist Assignment",
+          "days": 5.25
+        },
+        {
+          "label": "Treatment Duration",
+          "days": 3.12
+        },
+        {
+          "label": "Insurance Expedited",
+          "days": 1.98
+        },
+        {
+          "label": "Patient Complexity",
+          "days": 0.65
+        },
+        {
+          "label": "Approval Wait",
+          "days": 0.36
+        }
+      ]
+    },
+    "whatIf": {
+      "actualLabel": "Assigned a specialist",
+      "actualDays": 10.9,
+      "cfLabel": "no specialist / hospitalist pathway",
+      "cfDays": 6.8,
+      "savedDays": 4.1,
+      "reductionPct": 38
+    },
+    "confidenceGap": {
+      "agentPct": 93,
+      "causalPct": 87,
+      "note": "The agent was 93% confident. Only 87% of the observed Specialist Assignment → length of stay association survives as a causal effect once patient complexity is adjusted out — the rest was confounding."
+    },
+    "trust": {
+      "verdict": "HIGH CONFIDENCE",
+      "checks": [
+        {
+          "label": "Ground truth recovered",
+          "detail": "planted 5.27 → recovered 5.25 days · 0.4% error",
+          "pass": true
+        },
+        {
+          "label": "Confounding accounted for",
+          "detail": "naive 6.01 → causal 5.25 days · 12.6% was confounding",
+          "pass": true
+        },
+        {
+          "label": "Placebo test passed",
+          "detail": "permuted-treatment effect 0.02 ≈ 0",
+          "pass": true
+        },
+        {
+          "label": "Hidden-factor stress test passed",
+          "detail": "VanderWeele E-value 7.1 — an unmeasured confounder would need that strength on both sides",
+          "pass": true
+        },
+        {
+          "label": "Repeated simulations agree",
+          "detail": "10-seed range [5.12, 5.38] days",
+          "pass": true
+        }
+      ],
+      "evidence": [
+        {
+          "k": "Recovered effect",
+          "v": "5.25 days"
+        },
+        {
+          "k": "Recovery error",
+          "v": "0.4%"
+        },
+        {
+          "k": "Discovery F1",
+          "v": "0.83"
+        },
+        {
+          "k": "Bootstrap stability",
+          "v": "86%"
+        },
+        {
+          "k": "E-value",
+          "v": "7.1"
+        }
+      ]
+    },
+    "action": {
+      "title": "Guarantee specialist consult within 12 hours of request",
+      "detail": "Specialist assignment latency drives Treatment Duration on the critical path. A 12-hour consult SLA on the top three services removes most of the avoidable wait.",
+      "annualSavings": 610000,
+      "payback": "2.3 months",
+      "confidence": "High",
+      "reductionPct": 17.1
+    }
+  },
+  "agentDecisions": [
+    {
+      "id": "AGT-CCA-4200",
+      "agent": "Care Coordination Agent",
+      "decisionLabel": "Assigned a specialist",
+      "confidence": 0.93,
+      "caseId": "ADM_0023",
+      "entity": "Day Case",
+      "complexityScore": 5,
+      "outcomeDays": 10.9,
+      "counterfactualDays": 6.8,
+      "dominantDriver": "Specialist Assignment",
+      "dominantContribution": 5.83,
+      "controllableDays": 10.11,
+      "structuralDays": 0.58,
+      "verdict": "over-confident"
+    },
+    {
+      "id": "AGT-CCA-4217",
+      "agent": "Care Coordination Agent",
+      "decisionLabel": "Assigned a specialist",
+      "confidence": 0.93,
+      "caseId": "ADM_0003",
+      "entity": "Maternity",
+      "complexityScore": 8,
+      "outcomeDays": 10.8,
+      "counterfactualDays": 6.9,
+      "dominantDriver": "Specialist Assignment",
+      "dominantContribution": 5.55,
+      "controllableDays": 11.01,
+      "structuralDays": 0.38,
+      "verdict": "over-confident"
+    },
+    {
+      "id": "AGT-CCA-4234",
+      "agent": "Care Coordination Agent",
+      "decisionLabel": "Assigned a specialist",
+      "confidence": 0.91,
+      "caseId": "ADM_0019",
+      "entity": "Elective",
+      "complexityScore": 7,
+      "outcomeDays": 10.8,
+      "counterfactualDays": 7.1,
+      "dominantDriver": "Specialist Assignment",
+      "dominantContribution": 5.23,
+      "controllableDays": 8.81,
+      "structuralDays": 0.78,
+      "verdict": "over-confident"
+    },
+    {
+      "id": "AGT-CCA-4251",
+      "agent": "Care Coordination Agent",
+      "decisionLabel": "Assigned a specialist",
+      "confidence": 0.85,
+      "caseId": "ADM_0039",
+      "entity": "Emergency",
+      "complexityScore": 4,
+      "outcomeDays": 10.6,
+      "counterfactualDays": 7.6,
+      "dominantDriver": "Specialist Assignment",
+      "dominantContribution": 4.29,
+      "controllableDays": 8.52,
+      "structuralDays": 0.72,
+      "verdict": "aligned"
+    },
+    {
+      "id": "AGT-CCA-4268",
+      "agent": "Care Coordination Agent",
+      "decisionLabel": "Assigned a specialist",
+      "confidence": 0.87,
+      "caseId": "ADM_0015",
+      "entity": "Maternity",
+      "complexityScore": 6,
+      "outcomeDays": 10.4,
+      "counterfactualDays": 9,
+      "dominantDriver": "Treatment Duration",
+      "dominantContribution": 2.03,
+      "controllableDays": 5.66,
+      "structuralDays": 0.39,
+      "verdict": "aligned"
+    },
+    {
+      "id": "AGT-CCA-4285",
+      "agent": "Care Coordination Agent",
+      "decisionLabel": "Assigned a specialist",
+      "confidence": 0.87,
+      "caseId": "ADM_0018",
+      "entity": "Emergency",
+      "complexityScore": 4,
+      "outcomeDays": 10.3,
+      "counterfactualDays": 8.8,
+      "dominantDriver": "Specialist Assignment",
+      "dominantContribution": 2.08,
+      "controllableDays": 6.03,
+      "structuralDays": 0.77,
+      "verdict": "aligned"
+    }
+  ],
+  "causalAuditScore": {
+    "score": 85,
+    "status": "MONITOR",
+    "dimensions": [
+      {
+        "key": "Evidence completeness",
+        "score": 90,
+        "why": "96% data quality; ~4% of fields imputed"
+      },
+      {
+        "key": "Effect recovery",
+        "score": 94,
+        "why": "0.4% error vs the planted causal effect"
+      },
+      {
+        "key": "Causal confidence",
+        "score": 91,
+        "why": "95% CI width 0.18 days"
+      },
+      {
+        "key": "Discovery quality",
+        "score": 76,
+        "why": "autonomous discovery F1 0.83"
+      },
+      {
+        "key": "Confounding robustness",
+        "score": 88,
+        "why": "VanderWeele E-value 7.1"
+      },
+      {
+        "key": "Counterfactual stability",
+        "score": 90,
+        "why": "10-seed std 0.072 days"
+      },
+      {
+        "key": "Decision explainability",
+        "score": 71,
+        "why": "effect is mediated through a latent variable, not a direct edge the agent can inspect"
+      },
+      {
+        "key": "Intervention confidence",
+        "score": 82,
+        "why": "top action rated high confidence, measured"
+      }
+    ]
+  },
+  "scenario": {
+    "name": "Length-of-Stay Analysis",
+    "outcomeVariable": "Length of Stay",
+    "outcomeUnit": "days",
+    "treatmentLabel": "Specialist Assignment",
+    "confounderLabel": "Patient Complexity",
+    "moderatorLabel": "Patient Complexity",
+    "org": "Meridian Health System",
+    "domainLabel": "Healthcare",
+    "timeRange": "Jan 2023 – Apr 2024",
+    "totalEvents": 15000,
+    "treatedCases": 8100,
+    "treatedPct": 54,
+    "dataSources": 8,
+    "lastUpdated": "2 hours ago",
+    "description": "Complex patients are both more likely to be assigned a specialist and inherently stay longer — a confounding path that makes specialists look worse than they are. CausalOCPM isolates the true causal effect of specialist assignment on length of stay.",
+    "objectTypes": 5,
+    "causalLinks": 9,
+    "reliabilityPct": 86,
+    "objectNames": [
+      "Admissions",
+      "Patients",
+      "Care Teams",
+      "Diagnostics",
+      "Beds"
+    ],
+    "simBaseline": 7.9,
+    "outcomeMean": 4.99,
+    "outcomeStd": 3.51
+  },
+  "executiveSummary": {
+    "headline": "Specialist assignment is the dominant causal driver of length of stay — statistically validated, not just correlated.",
+    "confidence": "HIGH CONFIDENCE",
+    "bullets": [
+      "Recovered causal effect 5.25 days via Double ML vs a planted ground truth of 5.27 — recovery error 0.4%. A naive dashboard would have reported 6.01; confounding accounts for 0.76 of that.",
+      "Autonomous bootstrapped-PC discovery: F1 0.83 (7 of 9 planted edges, 1 spurious). Domain knowledge then recovers the 2 missed edges and re-orients the spurious one — never inventing a relationship.",
+      "Recommended action: Guarantee specialist consult within 12 hours of request → ~$610K/yr expected savings, payback 2.3 months",
+      "Robust to hidden confounding: VanderWeele E-value ≈ 7.1, placebo test +0.02 ≈ 0, stable across 10 regenerated datasets"
+    ],
+    "recommendedAction": "Guarantee specialist consult within 12 hours of request",
+    "alertOutcome": "Length of Stay",
+    "alertReductionPct": 17.1,
+    "chain": [
+      "Patient Complexity",
+      "Specialist Assignment",
+      "Treatment Duration",
+      "Length of Stay"
+    ],
+    "riskSegment": "Cardiology · high-complexity patients"
+  },
+  "kpis": {
+    "causalLinks": 9,
+    "target": "Length of Stay",
+    "expertRules": 11,
+    "reliabilityPct": 86
+  },
+  "discoveryMetrics": {
+    "precision": 0.88,
+    "recall": 0.78,
+    "f1": 0.83,
+    "stability": 0.86,
+    "bootstrapRuns": 20,
+    "shd": 3,
+    "truePositives": 7,
+    "falsePositives": 1,
+    "falseNegatives": 2,
+    "edgeStability": [
+      {
+        "edge": "Patient Complexity → Specialist Assignment",
+        "frequency": 0.67,
+        "discovered": true,
+        "pruned": false
+      },
+      {
+        "edge": "Patient Complexity → Bed Occupancy Rate",
+        "frequency": 0.88,
+        "discovered": true,
+        "pruned": false
+      },
+      {
+        "edge": "Patient Complexity → Length of Stay",
+        "frequency": 0.74,
+        "discovered": true,
+        "pruned": false
+      },
+      {
+        "edge": "Specialist Assignment → Treatment Duration",
+        "frequency": 0.99,
+        "discovered": true,
+        "pruned": false
+      },
+      {
+        "edge": "Treatment Duration → Length of Stay",
+        "frequency": 0.97,
+        "discovered": true,
+        "pruned": false
+      },
+      {
+        "edge": "Bed Occupancy Rate → Approval Wait",
+        "frequency": 0.44,
+        "discovered": false,
+        "pruned": false
+      },
+      {
+        "edge": "Emergency Admission → Approval Wait",
+        "frequency": 0.83,
+        "discovered": true,
+        "pruned": false
+      },
+      {
+        "edge": "Approval Wait → Length of Stay",
+        "frequency": 0.47,
+        "discovered": false,
+        "pruned": false
+      },
+      {
+        "edge": "Insurance Expedited → Length of Stay",
+        "frequency": 0.71,
+        "discovered": true,
+        "pruned": false
+      },
+      {
+        "edge": "Length of Stay → Approval Wait",
+        "frequency": 0.68,
+        "discovered": false,
+        "pruned": true
+      }
+    ]
+  },
+  "pipelinePerf": {
+    "prePrecision": 0.88,
+    "preRecall": 0.78,
+    "preF1": 0.83,
+    "effectErrorPct": 0.4,
+    "confoundingRemovedPct": 12.6,
+    "bootstrapStability": 0.86,
+    "eValue": 7.1,
+    "avgModelR2": 0.94,
+    "avgCoefErrorPct": 1.1,
+    "signCertain": 9,
+    "signTotal": 9,
+    "missingEdgesRecovered": 2,
+    "spuriousRemoved": 1,
+    "validatedLinks": 9
+  },
+  "data": {
+    "datasets": 8,
+    "variables": 68,
+    "causalLinks": 9,
+    "qualityPct": 96,
+    "objects": [
+      {
+        "name": "Admissions",
+        "records": 15000,
+        "attributes": 14,
+        "missingPct": 3,
+        "qualityPct": 96,
+        "updated": "1h ago"
+      },
+      {
+        "name": "Patients",
+        "records": 15000,
+        "attributes": 20,
+        "missingPct": 5,
+        "qualityPct": 95,
+        "updated": "3h ago"
+      },
+      {
+        "name": "Care Teams",
+        "records": 20,
+        "attributes": 11,
+        "missingPct": 4,
+        "qualityPct": 96,
+        "updated": "4h ago"
+      },
+      {
+        "name": "Diagnostics",
+        "records": 15000,
+        "attributes": 9,
+        "missingPct": 6,
+        "qualityPct": 94,
+        "updated": "2h ago"
+      },
+      {
+        "name": "Beds",
+        "records": 6,
+        "attributes": 8,
+        "missingPct": 2,
+        "qualityPct": 98,
+        "updated": "1h ago"
+      }
+    ],
+    "variableList": [
+      {
+        "name": "patient_complexity",
+        "object": "Admissions",
+        "type": "numeric",
+        "role": "confounder",
+        "missingPct": 2
+      },
+      {
+        "name": "specialist_required",
+        "object": "Patients",
+        "type": "boolean",
+        "role": "treatment",
+        "missingPct": 3
+      },
+      {
+        "name": "treatment_duration",
+        "object": "Care Teams",
+        "type": "numeric",
+        "role": "mediator",
+        "missingPct": 6
+      },
+      {
+        "name": "bed_occupancy_rate",
+        "object": "Diagnostics",
+        "type": "numeric",
+        "role": "mediator",
+        "missingPct": 2
+      },
+      {
+        "name": "emergency_admission",
+        "object": "Beds",
+        "type": "boolean",
+        "role": "exogenous",
+        "missingPct": 5
+      },
+      {
+        "name": "approval_wait",
+        "object": "Admissions",
+        "type": "numeric",
+        "role": "mediator",
+        "missingPct": 0
+      },
+      {
+        "name": "insurance_expedited",
+        "object": "Patients",
+        "type": "boolean",
+        "role": "exogenous",
+        "missingPct": 0
+      },
+      {
+        "name": "length_of_stay",
+        "object": "Care Teams",
+        "type": "numeric",
+        "role": "outcome",
+        "missingPct": 3
+      }
+    ],
+    "sampleEvents": [
+      {
+        "event_id": "E-00001",
+        "case_id": "ADM_0000",
+        "activity": "admitted",
+        "resource": "Neurology",
+        "timestamp": "2024-01-02T08:15:00Z",
+        "duration_hrs": 24.4
+      },
+      {
+        "event_id": "E-00002",
+        "case_id": "ADM_0001",
+        "activity": "triage",
+        "resource": "Cardiology",
+        "timestamp": "2024-02-03T09:15:00Z",
+        "duration_hrs": 28.9
+      },
+      {
+        "event_id": "E-00003",
+        "case_id": "ADM_0002",
+        "activity": "specialist_review",
+        "resource": "Neurology",
+        "timestamp": "2024-03-04T10:15:00Z",
+        "duration_hrs": 25.2
+      },
+      {
+        "event_id": "E-00004",
+        "case_id": "ADM_0003",
+        "activity": "diagnostics",
+        "resource": "Neurology",
+        "timestamp": "2024-04-05T11:15:00Z",
+        "duration_hrs": 12.8
+      },
+      {
+        "event_id": "E-00005",
+        "case_id": "ADM_0004",
+        "activity": "discharge_planning",
+        "resource": "Cardiology",
+        "timestamp": "2024-05-06T12:15:00Z",
+        "duration_hrs": 14.9
+      },
+      {
+        "event_id": "E-00006",
+        "case_id": "ADM_0005",
+        "activity": "discharged",
+        "resource": "Pulmonology",
+        "timestamp": "2024-06-07T13:15:00Z",
+        "duration_hrs": 11.9
+      },
+      {
+        "event_id": "E-00007",
+        "case_id": "ADM_0006",
+        "activity": "admitted",
+        "resource": "Neurology",
+        "timestamp": "2024-01-08T14:15:00Z",
+        "duration_hrs": 22.7
+      },
+      {
+        "event_id": "E-00008",
+        "case_id": "ADM_0007",
+        "activity": "triage",
+        "resource": "Pulmonology",
+        "timestamp": "2024-02-09T15:15:00Z",
+        "duration_hrs": 26
+      },
+      {
+        "event_id": "E-00009",
+        "case_id": "ADM_0008",
+        "activity": "specialist_review",
+        "resource": "Neurology",
+        "timestamp": "2024-03-10T16:15:00Z",
+        "duration_hrs": 23.6
+      },
+      {
+        "event_id": "E-00010",
+        "case_id": "ADM_0009",
+        "activity": "diagnostics",
+        "resource": "Neurology",
+        "timestamp": "2024-04-11T17:15:00Z",
+        "duration_hrs": 5.9
+      },
+      {
+        "event_id": "E-00011",
+        "case_id": "ADM_0010",
+        "activity": "discharge_planning",
+        "resource": "Orthopedics",
+        "timestamp": "2024-05-12T08:15:00Z",
+        "duration_hrs": 31.3
+      },
+      {
+        "event_id": "E-00012",
+        "case_id": "ADM_0011",
+        "activity": "discharged",
+        "resource": "Pulmonology",
+        "timestamp": "2024-06-13T09:15:00Z",
+        "duration_hrs": 34.8
+      },
+      {
+        "event_id": "E-00013",
+        "case_id": "ADM_0012",
+        "activity": "admitted",
+        "resource": "Pulmonology",
+        "timestamp": "2024-01-14T10:15:00Z",
+        "duration_hrs": 6.4
+      },
+      {
+        "event_id": "E-00014",
+        "case_id": "ADM_0013",
+        "activity": "triage",
+        "resource": "Neurology",
+        "timestamp": "2024-02-15T11:15:00Z",
+        "duration_hrs": 28.2
+      }
+    ]
+  },
+  "discovery": {
+    "totalEvents": 15000,
+    "treatedCases": 8100,
+    "treatedPct": 54,
+    "avgOutcome": 4.99,
+    "stdOutcome": 3.51,
+    "objectInstances": 41180,
+    "coOccurrenceEdges": 138420,
+    "avgDegree": 6.72,
+    "topResources": [
+      {
+        "label": "Top ward",
+        "value": "WRD_04"
+      },
+      {
+        "label": "Top clinician",
+        "value": "CLN_12"
+      },
+      {
+        "label": "Treatment arm",
+        "value": "MED_S · 54%"
+      }
+    ],
+    "correlationGroups": [
+      {
+        "name": "Specialist",
+        "options": [
+          {
+            "label": "Specialist assigned",
+            "onTimePct": 48,
+            "delayedPct": 52
+          },
+          {
+            "label": "No specialist",
+            "onTimePct": 83,
+            "delayedPct": 17
+          }
+        ]
+      },
+      {
+        "name": "Admission type",
+        "options": [
+          {
+            "label": "Emergency",
+            "onTimePct": 61,
+            "delayedPct": 39
+          },
+          {
+            "label": "Elective",
+            "onTimePct": 85,
+            "delayedPct": 15
+          }
+        ]
+      }
+    ],
+    "strongestRelationship": {
+      "from": "Specialist Assignment",
+      "to": "Treatment Duration",
+      "coefficient": 6.2
+    }
+  },
+  "causalGraph": {
+    "nodes": [
+      {
+        "id": "patient_complexity",
+        "label": "Patient Complexity",
+        "role": "confounder",
+        "x": 0,
+        "y": 2.6
+      },
+      {
+        "id": "specialist_required",
+        "label": "Specialist Assignment",
+        "role": "treatment",
+        "x": 0,
+        "y": 0
+      },
+      {
+        "id": "treatment_duration",
+        "label": "Treatment Duration",
+        "role": "mediator",
+        "x": 2.6,
+        "y": 0
+      },
+      {
+        "id": "bed_occupancy_rate",
+        "label": "Bed Occupancy Rate",
+        "role": "mediator",
+        "x": 2.6,
+        "y": 2.6
+      },
+      {
+        "id": "emergency_admission",
+        "label": "Emergency Admission",
+        "role": "exogenous",
+        "x": 2.6,
+        "y": 4.6
+      },
+      {
+        "id": "approval_wait",
+        "label": "Approval Wait",
+        "role": "mediator",
+        "x": 5.2,
+        "y": 1.8
+      },
+      {
+        "id": "insurance_expedited",
+        "label": "Insurance Expedited",
+        "role": "exogenous",
+        "x": 5.2,
+        "y": 0
+      },
+      {
+        "id": "length_of_stay",
+        "label": "Length of Stay",
+        "role": "outcome",
+        "x": 7.8,
+        "y": 1.8
+      }
+    ],
+    "edges": [
+      {
+        "source": "patient_complexity",
+        "target": "specialist_required",
+        "coef": 0.9,
+        "strength": "weak",
+        "discovered": true,
+        "bootstrapFreq": 0.67,
+        "pruned": false
+      },
+      {
+        "source": "patient_complexity",
+        "target": "bed_occupancy_rate",
+        "coef": 0.06,
+        "strength": "weak",
+        "discovered": true,
+        "bootstrapFreq": 0.88,
+        "pruned": false
+      },
+      {
+        "source": "patient_complexity",
+        "target": "length_of_stay",
+        "coef": 0.18,
+        "strength": "weak",
+        "discovered": true,
+        "bootstrapFreq": 0.74,
+        "pruned": false
+      },
+      {
+        "source": "specialist_required",
+        "target": "treatment_duration",
+        "coef": 6.2,
+        "strength": "strong",
+        "discovered": true,
+        "bootstrapFreq": 0.99,
+        "pruned": false
+      },
+      {
+        "source": "treatment_duration",
+        "target": "length_of_stay",
+        "coef": 0.85,
+        "strength": "weak",
+        "discovered": true,
+        "bootstrapFreq": 0.97,
+        "pruned": false
+      },
+      {
+        "source": "bed_occupancy_rate",
+        "target": "approval_wait",
+        "coef": 2.1,
+        "strength": "moderate",
+        "discovered": false,
+        "bootstrapFreq": 0.44,
+        "pruned": false
+      },
+      {
+        "source": "emergency_admission",
+        "target": "approval_wait",
+        "coef": 1.8,
+        "strength": "moderate",
+        "discovered": true,
+        "bootstrapFreq": 0.83,
+        "pruned": false
+      },
+      {
+        "source": "approval_wait",
+        "target": "length_of_stay",
+        "coef": 0.11,
+        "strength": "weak",
+        "discovered": false,
+        "bootstrapFreq": 0.47,
+        "pruned": false
+      },
+      {
+        "source": "insurance_expedited",
+        "target": "length_of_stay",
+        "coef": -0.55,
+        "strength": "weak",
+        "discovered": true,
+        "bootstrapFreq": 0.71,
+        "pruned": false
+      },
+      {
+        "source": "length_of_stay",
+        "target": "approval_wait",
+        "coef": 0,
+        "strength": "weak",
+        "discovered": true,
+        "bootstrapFreq": 0.68,
+        "pruned": true
+      }
+    ]
+  },
+  "effects": [
+    {
+      "driver": "specialist_required",
+      "label": "Specialist Assignment",
+      "effectDays": 5.25,
+      "ciLow": 5.16,
+      "ciHigh": 5.34,
+      "groundTruthDays": 5.27,
+      "naiveDays": 6.01,
+      "method": "Double ML + backdoor adjustment (mediated path)"
+    },
+    {
+      "driver": "treatment_duration",
+      "label": "Treatment Duration",
+      "effectDays": 3.12,
+      "ciLow": 3,
+      "ciHigh": 3.24,
+      "groundTruthDays": 3.06,
+      "naiveDays": 3.34,
+      "method": "Structural coefficient · Double ML"
+    },
+    {
+      "driver": "insurance_expedited",
+      "label": "Insurance Expedited",
+      "effectDays": 1.98,
+      "ciLow": 1.91,
+      "ciHigh": 2.05,
+      "groundTruthDays": 1.98,
+      "naiveDays": 2.1,
+      "method": "Structural coefficient · Double ML"
+    },
+    {
+      "driver": "patient_complexity",
+      "label": "Patient Complexity",
+      "effectDays": 0.65,
+      "ciLow": 0.57,
+      "ciHigh": 0.73,
+      "groundTruthDays": 0.65,
+      "naiveDays": 0.65,
+      "method": "Structural coefficient · Double ML"
+    },
+    {
+      "driver": "approval_wait",
+      "label": "Approval Wait",
+      "effectDays": 0.36,
+      "ciLow": 0.25,
+      "ciHigh": 0.47,
+      "groundTruthDays": 0.4,
+      "naiveDays": 0.44,
+      "method": "Structural coefficient · Double ML"
+    }
+  ],
+  "naiveEffect": {
+    "naiveDays": 6.01,
+    "causalDays": 5.25,
+    "biasDays": 0.76,
+    "biasPct": 12.6,
+    "inflationPct": 14.5,
+    "ciLow": 5.16,
+    "ciHigh": 5.34,
+    "method": "Double ML · cross-fitted gradient boosting · sandwich SEs"
+  },
+  "coefficients": [
+    {
+      "edge": "Patient Complexity → Specialist Assignment",
+      "estimated": 0.86,
+      "groundTruth": 0.9
+    },
+    {
+      "edge": "Patient Complexity → Bed Occupancy Rate",
+      "estimated": 0.05,
+      "groundTruth": 0.06
+    },
+    {
+      "edge": "Patient Complexity → Length of Stay",
+      "estimated": 0.15,
+      "groundTruth": 0.18
+    },
+    {
+      "edge": "Specialist Assignment → Treatment Duration",
+      "estimated": 6.04,
+      "groundTruth": 6.2
+    },
+    {
+      "edge": "Treatment Duration → Length of Stay",
+      "estimated": 0.83,
+      "groundTruth": 0.85
+    },
+    {
+      "edge": "Bed Occupancy Rate → Approval Wait",
+      "estimated": 2.12,
+      "groundTruth": 2.1
+    },
+    {
+      "edge": "Emergency Admission → Approval Wait",
+      "estimated": 1.76,
+      "groundTruth": 1.8
+    },
+    {
+      "edge": "Approval Wait → Length of Stay",
+      "estimated": 0.13,
+      "groundTruth": 0.11
+    },
+    {
+      "edge": "Insurance Expedited → Length of Stay",
+      "estimated": -0.58,
+      "groundTruth": -0.55
+    }
+  ],
+  "cate": {
+    "driver": "Specialist Assignment",
+    "segmentVar": "Patient Complexity",
+    "ate": 0.06,
+    "segments": [
+      {
+        "label": "Low (1–4)",
+        "effect": -0.02,
+        "ciLow": -0.71,
+        "ciHigh": 0.67
+      },
+      {
+        "label": "Mid (5–7)",
+        "effect": 0.04,
+        "ciLow": -0.68,
+        "ciHigh": 0.76
+      },
+      {
+        "label": "High (8–10)",
+        "effect": 0.17,
+        "ciLow": -0.6,
+        "ciHigh": 0.94
+      }
+    ],
+    "note": "The binary specialist-assignment effect within each patient-complexity tertile (mediators fixed); small by construction — the 5.25-day figure is the full path effect through Treatment Duration. The effect rises with complexity, so an SLA targeted at the most complex admissions returns most."
+  },
+  "sensitivity": {
+    "placeboEffect": 0.02,
+    "placeboPass": true,
+    "randomCauseEstimate": 5.25,
+    "randomCauseStable": true,
+    "eValue": 7.1,
+    "reportedEstimate": 5.25,
+    "strengths": [
+      0.05,
+      0.1,
+      0.15,
+      0.2,
+      0.25,
+      0.3
+    ],
+    "estimatesUnderConfounding": [
+      3.85,
+      2.89,
+      2.26,
+      1.84,
+      1.43,
+      1.11
+    ],
+    "verdict": "The effect stays positive across an assumed-confounding sweep out to 30% strength (5.25 → 1.11 days). Placebo +0.02 ≈ 0; random common cause re-estimates 5.25. VanderWeele E-value ≈ 7.1.",
+    "seedRobustness": {
+      "nSeeds": 10,
+      "causalMean": 5.25,
+      "causalStd": 0.072,
+      "causalLo": 5.12,
+      "causalHi": 5.38,
+      "naiveLo": 5.9,
+      "naiveHi": 6.12
+    }
+  },
+  "effectAccuracy": [
+    {
+      "bucket": "0–0.1",
+      "count": 3
+    },
+    {
+      "bucket": "0.1–0.2",
+      "count": 2
+    },
+    {
+      "bucket": "0.2–0.3",
+      "count": 1
+    },
+    {
+      "bucket": "0.3–0.5",
+      "count": 0
+    },
+    {
+      "bucket": "0.5+",
+      "count": 0
+    }
+  ],
+  "topDrivers": [
+    {
+      "label": "Specialist Assignment",
+      "impactDays": 5.25
+    },
+    {
+      "label": "Treatment Duration",
+      "impactDays": 3.12
+    },
+    {
+      "label": "Insurance Expedited",
+      "impactDays": 1.98
+    },
+    {
+      "label": "Patient Complexity",
+      "impactDays": 0.65
+    },
+    {
+      "label": "Approval Wait",
+      "impactDays": 0.36
+    }
+  ],
+  "recommendedActions": [
+    {
+      "id": "act-1",
+      "title": "Guarantee specialist consult within 12 hours of request",
+      "detail": "Specialist assignment latency drives Treatment Duration on the critical path. A 12-hour consult SLA on the top three services removes most of the avoidable wait.",
+      "deltaDays": 1.35,
+      "reductionPct": 17.1,
+      "annualSavings": 610000,
+      "roi": 6.8,
+      "confidence": "High",
+      "effort": "Medium",
+      "timeline": "Immediate",
+      "capex": 90000,
+      "evidence": "MEASURED",
+      "lever": "specialist_allocation_pct"
+    },
+    {
+      "id": "act-2",
+      "title": "Add evening imaging slots for inpatients",
+      "detail": "Shifting 20% of inpatient imaging demand into an evening block cuts diagnostic turnaround on the critical path.",
+      "deltaDays": 0.7,
+      "reductionPct": 8.9,
+      "annualSavings": 240000,
+      "roi": 4,
+      "confidence": "Medium",
+      "effort": "Low",
+      "timeline": "30 days",
+      "capex": 60000,
+      "evidence": "ILLUSTRATIVE",
+      "lever": "diagnostic_speed_mode"
+    },
+    {
+      "id": "act-3",
+      "title": "Start discharge planning at admission for elective cases",
+      "detail": "Early discharge planning frees downstream beds sooner and reduces the queueing effect on new admissions.",
+      "deltaDays": 0.55,
+      "reductionPct": 7,
+      "annualSavings": 175000,
+      "roi": 3.9,
+      "confidence": "Medium",
+      "effort": "Medium",
+      "timeline": "60 days",
+      "capex": 45000,
+      "evidence": "ILLUSTRATIVE",
+      "lever": "bed_capacity_expanded"
+    }
+  ],
+  "projectedImpact": {
+    "totalReductionPct": 33,
+    "totalReductionDays": 2.6,
+    "trend": [
+      {
+        "period": "Jan",
+        "baseline": 8.25,
+        "withActions": 7.21
+      },
+      {
+        "period": "Feb",
+        "baseline": 7.63,
+        "withActions": 6.28
+      },
+      {
+        "period": "Mar",
+        "baseline": 7.33,
+        "withActions": 5.67
+      },
+      {
+        "period": "Apr",
+        "baseline": 8.23,
+        "withActions": 6.25
+      },
+      {
+        "period": "May",
+        "baseline": 7.43,
+        "withActions": 5.14
+      },
+      {
+        "period": "Jun",
+        "baseline": 8.31,
+        "withActions": 5.71
+      }
+    ]
+  },
+  "simulator": {
+    "baselineOutcome": 7.9,
+    "outcomeLabel": "Length of Stay",
+    "throughputBaseline": 100,
+    "riskBaseline": 45,
+    "costPerDelayDay": 2200,
+    "annualVolume": 205,
+    "mediators": [
+      {
+        "name": "Treatment Duration",
+        "baseline": 7.6,
+        "unit": "days"
+      },
+      {
+        "name": "Bed Occupancy Rate",
+        "baseline": 78,
+        "unit": "%"
+      },
+      {
+        "name": "Approval Wait",
+        "baseline": 4.4,
+        "unit": "days"
+      }
+    ],
+    "levers": [
+      {
+        "id": "specialist_allocation_pct",
+        "label": "Specialist Allocation",
+        "group": "Specialist & Allocation",
+        "kind": "slider",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "unit": "%",
+        "baseline": 45,
+        "hint": "Baseline: 45% of cases assigned a specialist."
+      },
+      {
+        "id": "fast_track_eligibility_pct",
+        "label": "Fast-Track Eligibility",
+        "group": "Specialist & Allocation",
+        "kind": "slider",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "unit": "%",
+        "baseline": 20,
+        "hint": "Baseline: 20% on the fast-track pathway."
+      },
+      {
+        "id": "bed_capacity_expanded",
+        "label": "Expand Bed Capacity",
+        "group": "Capacity & Staff",
+        "kind": "toggle",
+        "min": 0,
+        "max": 1,
+        "step": 1,
+        "unit": "",
+        "baseline": 0,
+        "hint": "Adds beds — reduces occupancy pressure."
+      },
+      {
+        "id": "additional_nursing_staff",
+        "label": "Additional Nursing Staff",
+        "group": "Capacity & Staff",
+        "kind": "slider",
+        "min": 0,
+        "max": 20,
+        "step": 1,
+        "unit": "FTE",
+        "baseline": 0,
+        "hint": "Each nurse reduces treatment duration ~0.15 days."
+      },
+      {
+        "id": "triage_automation",
+        "label": "Automate Triage Scoring",
+        "group": "Process & Diagnostics",
+        "kind": "toggle",
+        "min": 0,
+        "max": 1,
+        "step": 1,
+        "unit": "",
+        "baseline": 0,
+        "hint": "Reduces triage-to-treatment delay ~0.3 days."
+      },
+      {
+        "id": "diagnostic_speed_mode",
+        "label": "Diagnostic Speed Mode",
+        "group": "Process & Diagnostics",
+        "kind": "mode",
+        "min": 0,
+        "max": 2,
+        "step": 1,
+        "unit": "",
+        "baseline": 0,
+        "modes": [
+          "Standard",
+          "Fast (−20%)",
+          "Express (−35%)"
+        ],
+        "hint": "Evening / express imaging blocks for inpatients."
+      }
+    ]
+  },
+  "report": {
+    "date": "August 31, 2026",
+    "casesAnalysed": 15000,
+    "groundTruthEffect": 5.27,
+    "dmlEffect": 5.25,
+    "confoundingRemoved": 0.76,
+    "naiveDays": 6.01,
+    "achievableReductionPct": 17.1,
+    "baselineDays": 7.9,
+    "targetDays": 6.55,
+    "primaryChain": [
+      "Patient Complexity",
+      "Specialist Assignment",
+      "Treatment Duration",
+      "Length of Stay"
+    ],
+    "signConsistency": "9/9 coefficients sign-certain",
+    "methodology": [
+      {
+        "phase": "Causal Discovery",
+        "detail": "Bootstrapped PC algorithm · Fisher-Z tests at α=0.05 · 20 subsamples × 2,000 rows · 60% edge-stability threshold · domain-knowledge ablation"
+      },
+      {
+        "phase": "Structural Model",
+        "detail": "Mixed SCM — Logistic Regression for binary nodes, Gradient Boosting for the outcome (avoids the Linear Probability Model pitfall)"
+      },
+      {
+        "phase": "Effect Estimation",
+        "detail": "Double ML (Chernozhukov et al. 2018) · 5-fold cross-fitting · GBM nuisance models · Eicker-Huber-White sandwich SEs"
+      },
+      {
+        "phase": "Validation",
+        "detail": "Planted ground-truth coefficients · placebo-treatment & random-common-cause refuters · E-value · CATE across tertiles · 10-seed robustness (mean ± std)"
+      },
+      {
+        "phase": "Attribution",
+        "detail": "SCM-grounded SHAP on structural equations · features split into controllable vs. structural"
+      }
+    ],
+    "actions": [
+      {
+        "rank": 1,
+        "action": "Guarantee specialist consult within 12 hours of request",
+        "impactPct": 17.1,
+        "confidence": "High",
+        "value": "$610K / yr",
+        "timeline": "Immediate"
+      },
+      {
+        "rank": 2,
+        "action": "Add evening imaging slots for inpatients",
+        "impactPct": 8.9,
+        "confidence": "Medium",
+        "value": "$240K / yr",
+        "timeline": "30 days"
+      },
+      {
+        "rank": 3,
+        "action": "Start discharge planning at admission for elective cases",
+        "impactPct": 7,
+        "confidence": "Medium",
+        "value": "$175K / yr",
+        "timeline": "60 days"
+      }
+    ],
+    "totalCapex": 195000,
+    "roiPayback": "2.3 months",
+    "riskLevel": "Medium — clinical staffing agreements required"
+  },
+  "crossDomain": [
+    {
+      "domain": "Manufacturing",
+      "precision": 1,
+      "recall": 0.89,
+      "f1": 0.94,
+      "naive": 8.78,
+      "causal": 6.65,
+      "planted": 6.66,
+      "eValue": 7.3
+    },
+    {
+      "domain": "Healthcare",
+      "precision": 0.88,
+      "recall": 0.78,
+      "f1": 0.83,
+      "naive": 6.01,
+      "causal": 5.25,
+      "planted": 5.27,
+      "eValue": 7.1
+    }
+  ],
+  "copilot": {
+    "chips": [
+      {
+        "key": "delays",
+        "label": "Why is LOS increasing?",
+        "icon": "trend"
+      },
+      {
+        "key": "bottleneck",
+        "label": "What is the top bottleneck?",
+        "icon": "alert"
+      },
+      {
+        "key": "intervention",
+        "label": "Best intervention?",
+        "icon": "bulb"
+      },
+      {
+        "key": "suppliers",
+        "label": "Compare specialist vs. not",
+        "icon": "swap"
+      },
+      {
+        "key": "chain",
+        "label": "Explain causal chain",
+        "icon": "link"
+      },
+      {
+        "key": "impact",
+        "label": "Predict impact of changes",
+        "icon": "chart"
+      },
+      {
+        "key": "executive",
+        "label": "Executive summary",
+        "icon": "doc"
+      }
+    ],
+    "followUps": {
+      "delays": [
+        "Best intervention?",
+        "Explain causal chain",
+        "Predict impact of changes"
+      ],
+      "bottleneck": [
+        "Why is LOS increasing?",
+        "Best intervention?",
+        "Compare specialist vs. not"
+      ],
+      "intervention": [
+        "Predict impact of changes",
+        "What are the ROI opportunities?",
+        "Explain causal chain"
+      ],
+      "suppliers": [
+        "Why is LOS increasing?",
+        "Best intervention?",
+        "Predict impact of changes"
+      ],
+      "chain": [
+        "What is the top bottleneck?",
+        "Best intervention?",
+        "Executive summary"
+      ],
+      "impact": [
+        "What are the ROI opportunities?",
+        "Executive summary",
+        "Explain causal chain"
+      ],
+      "executive": [
+        "Best intervention?",
+        "What are the ROI opportunities?",
+        "Explain causal chain"
+      ],
+      "custom": [
+        "Best intervention?",
+        "Executive summary",
+        "What is the top bottleneck?"
+      ]
+    },
+    "capabilities": [
+      {
+        "icon": "alert",
+        "title": "What is the top bottleneck?",
+        "detail": "Identify the most impactful constraint",
+        "tags": [
+          "Bottleneck Analysis",
+          "Root Cause"
+        ],
+        "prompt": "What is the top bottleneck?"
+      },
+      {
+        "icon": "chart",
+        "title": "Show causal KPI impact",
+        "detail": "See which factors drive length of stay",
+        "tags": [
+          "Causal Impact",
+          "KPI Analysis"
+        ],
+        "prompt": "Which factors have the largest causal impact on length of stay?"
+      },
+      {
+        "icon": "flask",
+        "title": "Run a what-if simulation",
+        "detail": "Test interventions & predict outcomes",
+        "tags": [
+          "Simulation",
+          "Forecasting"
+        ],
+        "prompt": "Predict impact of changes"
+      },
+      {
+        "icon": "doc",
+        "title": "Generate executive summary",
+        "detail": "AI-powered insights & recommendations",
+        "tags": [
+          "AI Summary",
+          "Insights"
+        ],
+        "prompt": "Executive summary"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "id": "ADM_0000",
+      "date": "2024-01-03",
+      "primaryEntity": "Cardiology",
+      "category": "Emergency",
+      "value": 14990,
+      "actualDelayDays": 8.1,
+      "predictedDelayDays": 15.1,
+      "counterfactualDelayDays": 5.2,
+      "counterfactualLabel": "If the specialist consult had happened within 12 hours",
+      "drivers": [
+        {
+          "label": "Specialist Assignment",
+          "contributionDays": 4.11,
+          "kind": "controllable"
+        },
+        {
+          "label": "Insurance Expedited",
+          "contributionDays": 1.17,
+          "kind": "controllable"
+        },
+        {
+          "label": "Treatment Duration",
+          "contributionDays": 1.01,
+          "kind": "controllable"
+        },
+        {
+          "label": "Patient Complexity",
+          "contributionDays": 0.46,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ADM_0014",
+        "ADM_0028",
+        "ADM_0004"
+      ],
+      "populationAvg": 7.9,
+      "percentile": 53,
+      "controllableDays": 6.29,
+      "structuralDays": 0.46,
+      "complexityScore": 10,
+      "treated": false,
+      "dominantDriver": "Specialist Assignment"
+    },
+    {
+      "id": "ADM_0001",
+      "date": "2024-02-04",
+      "primaryEntity": "Orthopedics",
+      "category": "Maternity",
+      "value": 51326,
+      "actualDelayDays": 3.7,
+      "predictedDelayDays": 0.2,
+      "counterfactualDelayDays": 1.9,
+      "counterfactualLabel": "If the specialist consult had happened within 12 hours",
+      "drivers": [
+        {
+          "label": "Specialist Assignment",
+          "contributionDays": -2.58,
+          "kind": "controllable"
+        },
+        {
+          "label": "Insurance Expedited",
+          "contributionDays": -2.23,
+          "kind": "controllable"
+        },
+        {
+          "label": "Treatment Duration",
+          "contributionDays": -1.67,
+          "kind": "controllable"
+        },
+        {
+          "label": "Patient Complexity",
+          "contributionDays": -0.72,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ADM_0021",
+        "ADM_0007",
+        "ADM_0012"
+      ],
+      "populationAvg": 7.9,
+      "percentile": 8,
+      "controllableDays": -6.48,
+      "structuralDays": -0.72,
+      "complexityScore": 2,
+      "treated": true,
+      "dominantDriver": "Specialist Assignment"
+    },
+    {
+      "id": "ADM_0002",
+      "date": "2024-03-05",
+      "primaryEntity": "Cardiology",
+      "category": "Maternity",
+      "value": 58020,
+      "actualDelayDays": 9.5,
+      "predictedDelayDays": 19.4,
+      "counterfactualDelayDays": 4.6,
+      "counterfactualLabel": "If the specialist consult had happened within 12 hours",
+      "drivers": [
+        {
+          "label": "Specialist Assignment",
+          "contributionDays": 6.95,
+          "kind": "controllable"
+        },
+        {
+          "label": "Treatment Duration",
+          "contributionDays": 2.63,
+          "kind": "controllable"
+        },
+        {
+          "label": "Insurance Expedited",
+          "contributionDays": 1.61,
+          "kind": "controllable"
+        },
+        {
+          "label": "Patient Complexity",
+          "contributionDays": 0.42,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ADM_0031",
+        "ADM_0037",
+        "ADM_0009"
+      ],
+      "populationAvg": 7.9,
+      "percentile": 75,
+      "controllableDays": 11.19,
+      "structuralDays": 0.42,
+      "complexityScore": 1,
+      "treated": true,
+      "dominantDriver": "Specialist Assignment"
+    },
+    {
+      "id": "ADM_0003",
+      "date": "2024-04-06",
+      "primaryEntity": "General Medicine",
+      "category": "Maternity",
+      "value": 45287,
+      "actualDelayDays": 10.8,
+      "predictedDelayDays": 19.4,
+      "counterfactualDelayDays": 6.9,
+      "counterfactualLabel": "If the specialist consult had happened within 12 hours",
+      "drivers": [
+        {
+          "label": "Specialist Assignment",
+          "contributionDays": 5.55,
+          "kind": "controllable"
+        },
+        {
+          "label": "Treatment Duration",
+          "contributionDays": 3.45,
+          "kind": "controllable"
+        },
+        {
+          "label": "Insurance Expedited",
+          "contributionDays": 2.01,
+          "kind": "controllable"
+        },
+        {
+          "label": "Patient Complexity",
+          "contributionDays": 0.38,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ADM_0019",
+        "ADM_0023",
+        "ADM_0039"
+      ],
+      "populationAvg": 7.9,
+      "percentile": 95,
+      "controllableDays": 11.01,
+      "structuralDays": 0.38,
+      "complexityScore": 8,
+      "treated": false,
+      "dominantDriver": "Specialist Assignment"
+    },
+    {
+      "id": "ADM_0004",
+      "date": "2024-05-07",
+      "primaryEntity": "Orthopedics",
+      "category": "Emergency",
+      "value": 16679,
+      "actualDelayDays": 7.9,
+      "predictedDelayDays": 17.1,
+      "counterfactualDelayDays": 4.5,
+      "counterfactualLabel": "If the specialist consult had happened within 12 hours",
+      "drivers": [
+        {
+          "label": "Specialist Assignment",
+          "contributionDays": 4.91,
+          "kind": "controllable"
+        },
+        {
+          "label": "Insurance Expedited",
+          "contributionDays": 1.92,
+          "kind": "controllable"
+        },
+        {
+          "label": "Treatment Duration",
+          "contributionDays": 1.68,
+          "kind": "controllable"
+        },
+        {
+          "label": "Patient Complexity",
+          "contributionDays": 0.72,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ADM_0028",
+        "ADM_0010",
+        "ADM_0000"
+      ],
+      "populationAvg": 7.9,
+      "percentile": 48,
+      "controllableDays": 8.51,
+      "structuralDays": 0.72,
+      "complexityScore": 6,
+      "treated": false,
+      "dominantDriver": "Specialist Assignment"
+    },
+    {
+      "id": "ADM_0005",
+      "date": "2024-06-08",
+      "primaryEntity": "Neurology",
+      "category": "Day Case",
+      "value": 77624,
+      "actualDelayDays": 6.7,
+      "predictedDelayDays": -2.6,
+      "counterfactualDelayDays": 3.4,
+      "counterfactualLabel": "If the specialist consult had happened within 12 hours",
+      "drivers": [
+        {
+          "label": "Specialist Assignment",
+          "contributionDays": -4.7,
+          "kind": "controllable"
+        },
+        {
+          "label": "Treatment Duration",
+          "contributionDays": -3.97,
+          "kind": "controllable"
+        },
+        {
+          "label": "Insurance Expedited",
+          "contributionDays": -1.24,
+          "kind": "controllable"
+        },
+        {
+          "label": "Patient Complexity",
+          "contributionDays": -0.47,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ADM_0006",
+        "ADM_0030",
+        "ADM_0020"
+      ],
+      "populationAvg": 7.9,
+      "percentile": 33,
+      "controllableDays": -9.91,
+      "structuralDays": -0.47,
+      "complexityScore": 5,
+      "treated": true,
+      "dominantDriver": "Specialist Assignment"
+    },
+    {
+      "id": "ADM_0006",
+      "date": "2024-01-09",
+      "primaryEntity": "Pulmonology",
+      "category": "Day Case",
+      "value": 46520,
+      "actualDelayDays": 7.1,
+      "predictedDelayDays": -2.4,
+      "counterfactualDelayDays": 3.9,
+      "counterfactualLabel": "If the specialist consult had happened within 12 hours",
+      "drivers": [
+        {
+          "label": "Specialist Assignment",
+          "contributionDays": -4.54,
+          "kind": "controllable"
+        },
+        {
+          "label": "Treatment Duration",
+          "contributionDays": -3.96,
+          "kind": "controllable"
+        },
+        {
+          "label": "Insurance Expedited",
+          "contributionDays": -1.92,
+          "kind": "controllable"
+        },
+        {
+          "label": "Patient Complexity",
+          "contributionDays": -0.72,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ADM_0020",
+        "ADM_0005",
+        "ADM_0033"
+      ],
+      "populationAvg": 7.9,
+      "percentile": 35,
+      "controllableDays": -10.42,
+      "structuralDays": -0.72,
+      "complexityScore": 8,
+      "treated": true,
+      "dominantDriver": "Specialist Assignment"
+    },
+    {
+      "id": "ADM_0007",
+      "date": "2024-02-10",
+      "primaryEntity": "General Medicine",
+      "category": "Day Case",
+      "value": 2518,
+      "actualDelayDays": 3.5,
+      "predictedDelayDays": -2,
+      "counterfactualDelayDays": 0.3,
+      "counterfactualLabel": "If the specialist consult had happened within 12 hours",
+      "drivers": [
+        {
+          "label": "Specialist Assignment",
+          "contributionDays": -5.73,
+          "kind": "controllable"
+        },
+        {
+          "label": "Treatment Duration",
+          "contributionDays": -2.31,
+          "kind": "controllable"
+        },
+        {
+          "label": "Insurance Expedited",
+          "contributionDays": -0.87,
+          "kind": "controllable"
+        },
+        {
+          "label": "Patient Complexity",
+          "contributionDays": -0.61,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ADM_0001",
+        "ADM_0021",
+        "ADM_0012"
+      ],
+      "populationAvg": 7.9,
+      "percentile": 5,
+      "controllableDays": -8.91,
+      "structuralDays": -0.61,
+      "complexityScore": 2,
+      "treated": false,
+      "dominantDriver": "Specialist Assignment"
+    },
+    {
+      "id": "ADM_0008",
+      "date": "2024-03-11",
+      "primaryEntity": "Orthopedics",
+      "category": "Elective",
+      "value": 84036,
+      "actualDelayDays": 10,
+      "predictedDelayDays": 15.9,
+      "counterfactualDelayDays": 7.3,
+      "counterfactualLabel": "If the specialist consult had happened within 12 hours",
+      "drivers": [
+        {
+          "label": "Treatment Duration",
+          "contributionDays": 3.88,
+          "kind": "controllable"
+        },
+        {
+          "label": "Specialist Assignment",
+          "contributionDays": 2.39,
+          "kind": "controllable"
+        },
+        {
+          "label": "Insurance Expedited",
+          "contributionDays": 1.29,
+          "kind": "controllable"
+        },
+        {
+          "label": "Patient Complexity",
+          "contributionDays": 0.31,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ADM_0009",
+        "ADM_0022",
+        "ADM_0018"
+      ],
+      "populationAvg": 7.9,
+      "percentile": 85,
+      "controllableDays": 7.56,
+      "structuralDays": 0.31,
+      "complexityScore": 7,
+      "treated": false,
+      "dominantDriver": "Treatment Duration"
+    },
+    {
+      "id": "ADM_0009",
+      "date": "2024-04-12",
+      "primaryEntity": "Cardiology",
+      "category": "Day Case",
+      "value": 9907,
+      "actualDelayDays": 9.8,
+      "predictedDelayDays": 13.8,
+      "counterfactualDelayDays": 7.6,
+      "counterfactualLabel": "If the specialist consult had happened within 12 hours",
+      "drivers": [
+        {
+          "label": "Specialist Assignment",
+          "contributionDays": 3.14,
+          "kind": "controllable"
+        },
+        {
+          "label": "Treatment Duration",
+          "contributionDays": 2.35,
+          "kind": "controllable"
+        },
+        {
+          "label": "Insurance Expedited",
+          "contributionDays": 0.88,
+          "kind": "controllable"
+        },
+        {
+          "label": "Patient Complexity",
+          "contributionDays": 0.3,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ADM_0022",
+        "ADM_0008",
+        "ADM_0031"
+      ],
+      "populationAvg": 7.9,
+      "percentile": 80,
+      "controllableDays": 6.37,
+      "structuralDays": 0.3,
+      "complexityScore": 4,
+      "treated": true,
+      "dominantDriver": "Specialist Assignment"
+    },
+    {
+      "id": "ADM_0010",
+      "date": "2024-05-13",
+      "primaryEntity": "Orthopedics",
+      "category": "Maternity",
+      "value": 70013,
+      "actualDelayDays": 7.8,
+      "predictedDelayDays": 1.3,
+      "counterfactualDelayDays": 4.8,
+      "counterfactualLabel": "If the specialist consult had happened within 12 hours",
+      "drivers": [
+        {
+          "label": "Specialist Assignment",
+          "contributionDays": -4.27,
+          "kind": "controllable"
+        },
+        {
+          "label": "Treatment Duration",
+          "contributionDays": -1.93,
+          "kind": "controllable"
+        },
+        {
+          "label": "Insurance Expedited",
+          "contributionDays": -0.6,
+          "kind": "controllable"
+        },
+        {
+          "label": "Patient Complexity",
+          "contributionDays": -0.23,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ADM_0033",
+        "ADM_0035",
+        "ADM_0004"
+      ],
+      "populationAvg": 7.9,
+      "percentile": 45,
+      "controllableDays": -6.8,
+      "structuralDays": -0.23,
+      "complexityScore": 2,
+      "treated": false,
+      "dominantDriver": "Specialist Assignment"
+    },
+    {
+      "id": "ADM_0011",
+      "date": "2024-06-14",
+      "primaryEntity": "Orthopedics",
+      "category": "Day Case",
+      "value": 64750,
+      "actualDelayDays": 9.2,
+      "predictedDelayDays": 15.7,
+      "counterfactualDelayDays": 7.4,
+      "counterfactualLabel": "If the specialist consult had happened within 12 hours",
+      "drivers": [
+        {
+          "label": "Insurance Expedited",
+          "contributionDays": 2.56,
+          "kind": "controllable"
+        },
+        {
+          "label": "Treatment Duration",
+          "contributionDays": 2.45,
+          "kind": "controllable"
+        },
+        {
+          "label": "Specialist Assignment",
+          "contributionDays": 1.61,
+          "kind": "controllable"
+        },
+        {
+          "label": "Patient Complexity",
+          "contributionDays": 0.8,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ADM_0034",
+        "ADM_0037",
+        "ADM_0013"
+      ],
+      "populationAvg": 7.9,
+      "percentile": 70,
+      "controllableDays": 6.62,
+      "structuralDays": 0.8,
+      "complexityScore": 2,
+      "treated": true,
+      "dominantDriver": "Insurance Expedited"
+    },
+    {
+      "id": "ADM_0012",
+      "date": "2024-01-15",
+      "primaryEntity": "Pulmonology",
+      "category": "Transfer",
+      "value": 46416,
+      "actualDelayDays": 4.1,
+      "predictedDelayDays": -1.4,
+      "counterfactualDelayDays": 0.4,
+      "counterfactualLabel": "If the specialist consult had happened within 12 hours",
+      "drivers": [
+        {
+          "label": "Specialist Assignment",
+          "contributionDays": -5.31,
+          "kind": "controllable"
+        },
+        {
+          "label": "Treatment Duration",
+          "contributionDays": -2.34,
+          "kind": "controllable"
+        },
+        {
+          "label": "Insurance Expedited",
+          "contributionDays": -0.88,
+          "kind": "controllable"
+        },
+        {
+          "label": "Patient Complexity",
+          "contributionDays": -0.53,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ADM_0021",
+        "ADM_0001",
+        "ADM_0007"
+      ],
+      "populationAvg": 7.9,
+      "percentile": 13,
+      "controllableDays": -8.53,
+      "structuralDays": -0.53,
+      "complexityScore": 1,
+      "treated": false,
+      "dominantDriver": "Specialist Assignment"
+    },
+    {
+      "id": "ADM_0013",
+      "date": "2024-02-16",
+      "primaryEntity": "Pulmonology",
+      "category": "Maternity",
+      "value": 41435,
+      "actualDelayDays": 8.9,
+      "predictedDelayDays": 16.9,
+      "counterfactualDelayDays": 6.2,
+      "counterfactualLabel": "If the specialist consult had happened within 12 hours",
+      "drivers": [
+        {
+          "label": "Specialist Assignment",
+          "contributionDays": 3.88,
+          "kind": "controllable"
+        },
+        {
+          "label": "Treatment Duration",
+          "contributionDays": 2.61,
+          "kind": "controllable"
+        },
+        {
+          "label": "Insurance Expedited",
+          "contributionDays": 1.94,
+          "kind": "controllable"
+        },
+        {
+          "label": "Patient Complexity",
+          "contributionDays": 0.78,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ADM_0034",
+        "ADM_0011",
+        "ADM_0029"
+      ],
+      "populationAvg": 7.9,
+      "percentile": 65,
+      "controllableDays": 8.43,
+      "structuralDays": 0.78,
+      "complexityScore": 7,
+      "treated": true,
+      "dominantDriver": "Specialist Assignment"
+    },
+    {
+      "id": "ADM_0014",
+      "date": "2024-03-17",
+      "primaryEntity": "Neurology",
+      "category": "Transfer",
+      "value": 26686,
+      "actualDelayDays": 8.1,
+      "predictedDelayDays": 14.9,
+      "counterfactualDelayDays": 5.6,
+      "counterfactualLabel": "If the specialist consult had happened within 12 hours",
+      "drivers": [
+        {
+          "label": "Specialist Assignment",
+          "contributionDays": 3.55,
+          "kind": "controllable"
+        },
+        {
+          "label": "Treatment Duration",
+          "contributionDays": 3.12,
+          "kind": "controllable"
+        },
+        {
+          "label": "Insurance Expedited",
+          "contributionDays": 0.73,
+          "kind": "controllable"
+        },
+        {
+          "label": "Patient Complexity",
+          "contributionDays": 0.56,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ADM_0000",
+        "ADM_0028",
+        "ADM_0004"
+      ],
+      "populationAvg": 7.9,
+      "percentile": 55,
+      "controllableDays": 7.4,
+      "structuralDays": 0.56,
+      "complexityScore": 2,
+      "treated": false,
+      "dominantDriver": "Specialist Assignment"
+    },
+    {
+      "id": "ADM_0015",
+      "date": "2024-04-18",
+      "primaryEntity": "Neurology",
+      "category": "Maternity",
+      "value": 28819,
+      "actualDelayDays": 10.4,
+      "predictedDelayDays": 13.4,
+      "counterfactualDelayDays": 9,
+      "counterfactualLabel": "If the specialist consult had happened within 12 hours",
+      "drivers": [
+        {
+          "label": "Treatment Duration",
+          "contributionDays": 2.03,
+          "kind": "controllable"
+        },
+        {
+          "label": "Insurance Expedited",
+          "contributionDays": 1.91,
+          "kind": "controllable"
+        },
+        {
+          "label": "Specialist Assignment",
+          "contributionDays": 1.72,
+          "kind": "controllable"
+        },
+        {
+          "label": "Patient Complexity",
+          "contributionDays": 0.39,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ADM_0018",
+        "ADM_0039",
+        "ADM_0003"
+      ],
+      "populationAvg": 7.9,
+      "percentile": 90,
+      "controllableDays": 5.66,
+      "structuralDays": 0.39,
+      "complexityScore": 6,
+      "treated": false,
+      "dominantDriver": "Treatment Duration"
+    },
+    {
+      "id": "ADM_0016",
+      "date": "2024-05-19",
+      "primaryEntity": "Pulmonology",
+      "category": "Emergency",
+      "value": 40484,
+      "actualDelayDays": 6,
+      "predictedDelayDays": 0,
+      "counterfactualDelayDays": 3,
+      "counterfactualLabel": "If the specialist consult had happened within 12 hours",
+      "drivers": [
+        {
+          "label": "Specialist Assignment",
+          "contributionDays": -4.23,
+          "kind": "controllable"
+        },
+        {
+          "label": "Treatment Duration",
+          "contributionDays": -2.7,
+          "kind": "controllable"
+        },
+        {
+          "label": "Insurance Expedited",
+          "contributionDays": -1.01,
+          "kind": "controllable"
+        },
+        {
+          "label": "Patient Complexity",
+          "contributionDays": -0.47,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ADM_0024",
+        "ADM_0027",
+        "ADM_0030"
+      ],
+      "populationAvg": 7.9,
+      "percentile": 28,
+      "controllableDays": -7.94,
+      "structuralDays": -0.47,
+      "complexityScore": 3,
+      "treated": true,
+      "dominantDriver": "Specialist Assignment"
+    },
+    {
+      "id": "ADM_0017",
+      "date": "2024-06-20",
+      "primaryEntity": "Orthopedics",
+      "category": "Transfer",
+      "value": 70239,
+      "actualDelayDays": 5.1,
+      "predictedDelayDays": -3.2,
+      "counterfactualDelayDays": 1,
+      "counterfactualLabel": "If the specialist consult had happened within 12 hours",
+      "drivers": [
+        {
+          "label": "Specialist Assignment",
+          "contributionDays": -5.87,
+          "kind": "controllable"
+        },
+        {
+          "label": "Treatment Duration",
+          "contributionDays": -2.08,
+          "kind": "controllable"
+        },
+        {
+          "label": "Insurance Expedited",
+          "contributionDays": -2,
+          "kind": "controllable"
+        },
+        {
+          "label": "Patient Complexity",
+          "contributionDays": -0.77,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ADM_0038",
+        "ADM_0025",
+        "ADM_0027"
+      ],
+      "populationAvg": 7.9,
+      "percentile": 18,
+      "controllableDays": -9.95,
+      "structuralDays": -0.77,
+      "complexityScore": 1,
+      "treated": false,
+      "dominantDriver": "Specialist Assignment"
+    },
+    {
+      "id": "ADM_0018",
+      "date": "2024-01-21",
+      "primaryEntity": "Pulmonology",
+      "category": "Emergency",
+      "value": 24287,
+      "actualDelayDays": 10.3,
+      "predictedDelayDays": 14.8,
+      "counterfactualDelayDays": 8.8,
+      "counterfactualLabel": "If the specialist consult had happened within 12 hours",
+      "drivers": [
+        {
+          "label": "Specialist Assignment",
+          "contributionDays": 2.08,
+          "kind": "controllable"
+        },
+        {
+          "label": "Treatment Duration",
+          "contributionDays": 1.99,
+          "kind": "controllable"
+        },
+        {
+          "label": "Insurance Expedited",
+          "contributionDays": 1.96,
+          "kind": "controllable"
+        },
+        {
+          "label": "Patient Complexity",
+          "contributionDays": 0.77,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ADM_0015",
+        "ADM_0039",
+        "ADM_0008"
+      ],
+      "populationAvg": 7.9,
+      "percentile": 88,
+      "controllableDays": 6.03,
+      "structuralDays": 0.77,
+      "complexityScore": 4,
+      "treated": true,
+      "dominantDriver": "Specialist Assignment"
+    },
+    {
+      "id": "ADM_0019",
+      "date": "2024-02-22",
+      "primaryEntity": "Pulmonology",
+      "category": "Elective",
+      "value": 35730,
+      "actualDelayDays": 10.8,
+      "predictedDelayDays": 17.2,
+      "counterfactualDelayDays": 7.1,
+      "counterfactualLabel": "If the specialist consult had happened within 12 hours",
+      "drivers": [
+        {
+          "label": "Specialist Assignment",
+          "contributionDays": 5.23,
+          "kind": "controllable"
+        },
+        {
+          "label": "Treatment Duration",
+          "contributionDays": 2.06,
+          "kind": "controllable"
+        },
+        {
+          "label": "Insurance Expedited",
+          "contributionDays": 1.52,
+          "kind": "controllable"
+        },
+        {
+          "label": "Patient Complexity",
+          "contributionDays": 0.78,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ADM_0003",
+        "ADM_0023",
+        "ADM_0039"
+      ],
+      "populationAvg": 7.9,
+      "percentile": 98,
+      "controllableDays": 8.81,
+      "structuralDays": 0.78,
+      "complexityScore": 7,
+      "treated": true,
+      "dominantDriver": "Specialist Assignment"
+    },
+    {
+      "id": "ADM_0020",
+      "date": "2024-03-23",
+      "primaryEntity": "Pulmonology",
+      "category": "Day Case",
+      "value": 73583,
+      "actualDelayDays": 7.3,
+      "predictedDelayDays": 0.4,
+      "counterfactualDelayDays": 5.5,
+      "counterfactualLabel": "If the specialist consult had happened within 12 hours",
+      "drivers": [
+        {
+          "label": "Insurance Expedited",
+          "contributionDays": -2.53,
+          "kind": "controllable"
+        },
+        {
+          "label": "Treatment Duration",
+          "contributionDays": -2.29,
+          "kind": "controllable"
+        },
+        {
+          "label": "Specialist Assignment",
+          "contributionDays": -2.12,
+          "kind": "controllable"
+        },
+        {
+          "label": "Patient Complexity",
+          "contributionDays": -0.68,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ADM_0006",
+        "ADM_0033",
+        "ADM_0035"
+      ],
+      "populationAvg": 7.9,
+      "percentile": 38,
+      "controllableDays": -6.94,
+      "structuralDays": -0.68,
+      "complexityScore": 8,
+      "treated": false,
+      "dominantDriver": "Insurance Expedited"
+    },
+    {
+      "id": "ADM_0021",
+      "date": "2024-04-24",
+      "primaryEntity": "Neurology",
+      "category": "Emergency",
+      "value": 53019,
+      "actualDelayDays": 3.8,
+      "predictedDelayDays": 0,
+      "counterfactualDelayDays": 1.1,
+      "counterfactualLabel": "If the specialist consult had happened within 12 hours",
+      "drivers": [
+        {
+          "label": "Specialist Assignment",
+          "contributionDays": -3.89,
+          "kind": "controllable"
+        },
+        {
+          "label": "Insurance Expedited",
+          "contributionDays": -1.63,
+          "kind": "controllable"
+        },
+        {
+          "label": "Treatment Duration",
+          "contributionDays": -1.55,
+          "kind": "controllable"
+        },
+        {
+          "label": "Patient Complexity",
+          "contributionDays": -0.45,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ADM_0001",
+        "ADM_0007",
+        "ADM_0012"
+      ],
+      "populationAvg": 7.9,
+      "percentile": 10,
+      "controllableDays": -7.07,
+      "structuralDays": -0.45,
+      "complexityScore": 2,
+      "treated": false,
+      "dominantDriver": "Specialist Assignment"
+    },
+    {
+      "id": "ADM_0022",
+      "date": "2024-05-25",
+      "primaryEntity": "Orthopedics",
+      "category": "Elective",
+      "value": 13212,
+      "actualDelayDays": 9.8,
+      "predictedDelayDays": 12.5,
+      "counterfactualDelayDays": 8.4,
+      "counterfactualLabel": "If the specialist consult had happened within 12 hours",
+      "drivers": [
+        {
+          "label": "Specialist Assignment",
+          "contributionDays": 1.94,
+          "kind": "controllable"
+        },
+        {
+          "label": "Insurance Expedited",
+          "contributionDays": 1.83,
+          "kind": "controllable"
+        },
+        {
+          "label": "Treatment Duration",
+          "contributionDays": 1.65,
+          "kind": "controllable"
+        },
+        {
+          "label": "Patient Complexity",
+          "contributionDays": 0.28,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ADM_0009",
+        "ADM_0008",
+        "ADM_0031"
+      ],
+      "populationAvg": 7.9,
+      "percentile": 83,
+      "controllableDays": 5.42,
+      "structuralDays": 0.28,
+      "complexityScore": 1,
+      "treated": true,
+      "dominantDriver": "Specialist Assignment"
+    },
+    {
+      "id": "ADM_0023",
+      "date": "2024-06-26",
+      "primaryEntity": "Pulmonology",
+      "category": "Day Case",
+      "value": 28469,
+      "actualDelayDays": 10.9,
+      "predictedDelayDays": 18.6,
+      "counterfactualDelayDays": 6.8,
+      "counterfactualLabel": "If the specialist consult had happened within 12 hours",
+      "drivers": [
+        {
+          "label": "Specialist Assignment",
+          "contributionDays": 5.83,
+          "kind": "controllable"
+        },
+        {
+          "label": "Insurance Expedited",
+          "contributionDays": 2.39,
+          "kind": "controllable"
+        },
+        {
+          "label": "Treatment Duration",
+          "contributionDays": 1.89,
+          "kind": "controllable"
+        },
+        {
+          "label": "Patient Complexity",
+          "contributionDays": 0.58,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ADM_0003",
+        "ADM_0019",
+        "ADM_0039"
+      ],
+      "populationAvg": 7.9,
+      "percentile": 100,
+      "controllableDays": 10.11,
+      "structuralDays": 0.58,
+      "complexityScore": 5,
+      "treated": true,
+      "dominantDriver": "Specialist Assignment"
+    },
+    {
+      "id": "ADM_0024",
+      "date": "2024-01-03",
+      "primaryEntity": "Pulmonology",
+      "category": "Transfer",
+      "value": 55869,
+      "actualDelayDays": 5.9,
+      "predictedDelayDays": 0.8,
+      "counterfactualDelayDays": 3.5,
+      "counterfactualLabel": "If the specialist consult had happened within 12 hours",
+      "drivers": [
+        {
+          "label": "Specialist Assignment",
+          "contributionDays": -3.39,
+          "kind": "controllable"
+        },
+        {
+          "label": "Treatment Duration",
+          "contributionDays": -1.53,
+          "kind": "controllable"
+        },
+        {
+          "label": "Insurance Expedited",
+          "contributionDays": -1.29,
+          "kind": "controllable"
+        },
+        {
+          "label": "Patient Complexity",
+          "contributionDays": -0.55,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ADM_0016",
+        "ADM_0027",
+        "ADM_0025"
+      ],
+      "populationAvg": 7.9,
+      "percentile": 25,
+      "controllableDays": -6.21,
+      "structuralDays": -0.55,
+      "complexityScore": 3,
+      "treated": false,
+      "dominantDriver": "Specialist Assignment"
+    },
+    {
+      "id": "ADM_0025",
+      "date": "2024-02-04",
+      "primaryEntity": "Cardiology",
+      "category": "Maternity",
+      "value": 8025,
+      "actualDelayDays": 5.6,
+      "predictedDelayDays": 1.5,
+      "counterfactualDelayDays": 3.9,
+      "counterfactualLabel": "If the specialist consult had happened within 12 hours",
+      "drivers": [
+        {
+          "label": "Specialist Assignment",
+          "contributionDays": -2.5,
+          "kind": "controllable"
+        },
+        {
+          "label": "Insurance Expedited",
+          "contributionDays": -2.26,
+          "kind": "controllable"
+        },
+        {
+          "label": "Treatment Duration",
+          "contributionDays": -1.49,
+          "kind": "controllable"
+        },
+        {
+          "label": "Patient Complexity",
+          "contributionDays": -0.41,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ADM_0027",
+        "ADM_0024",
+        "ADM_0016"
+      ],
+      "populationAvg": 7.9,
+      "percentile": 20,
+      "controllableDays": -6.25,
+      "structuralDays": -0.41,
+      "complexityScore": 5,
+      "treated": false,
+      "dominantDriver": "Specialist Assignment"
+    },
+    {
+      "id": "ADM_0026",
+      "date": "2024-03-05",
+      "primaryEntity": "Pulmonology",
+      "category": "Day Case",
+      "value": 84171,
+      "actualDelayDays": 8.4,
+      "predictedDelayDays": 14.9,
+      "counterfactualDelayDays": 5.4,
+      "counterfactualLabel": "If the specialist consult had happened within 12 hours",
+      "drivers": [
+        {
+          "label": "Specialist Assignment",
+          "contributionDays": 4.24,
+          "kind": "controllable"
+        },
+        {
+          "label": "Treatment Duration",
+          "contributionDays": 1.91,
+          "kind": "controllable"
+        },
+        {
+          "label": "Insurance Expedited",
+          "contributionDays": 0.73,
+          "kind": "controllable"
+        },
+        {
+          "label": "Patient Complexity",
+          "contributionDays": 0.35,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ADM_0036",
+        "ADM_0029",
+        "ADM_0000"
+      ],
+      "populationAvg": 7.9,
+      "percentile": 57,
+      "controllableDays": 6.88,
+      "structuralDays": 0.35,
+      "complexityScore": 4,
+      "treated": true,
+      "dominantDriver": "Specialist Assignment"
+    },
+    {
+      "id": "ADM_0027",
+      "date": "2024-04-06",
+      "primaryEntity": "Orthopedics",
+      "category": "Emergency",
+      "value": 34572,
+      "actualDelayDays": 5.8,
+      "predictedDelayDays": -2.4,
+      "counterfactualDelayDays": 2.5,
+      "counterfactualLabel": "If the specialist consult had happened within 12 hours",
+      "drivers": [
+        {
+          "label": "Specialist Assignment",
+          "contributionDays": -4.7,
+          "kind": "controllable"
+        },
+        {
+          "label": "Treatment Duration",
+          "contributionDays": -3.72,
+          "kind": "controllable"
+        },
+        {
+          "label": "Insurance Expedited",
+          "contributionDays": -1.01,
+          "kind": "controllable"
+        },
+        {
+          "label": "Patient Complexity",
+          "contributionDays": -0.34,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ADM_0024",
+        "ADM_0016",
+        "ADM_0025"
+      ],
+      "populationAvg": 7.9,
+      "percentile": 23,
+      "controllableDays": -9.43,
+      "structuralDays": -0.34,
+      "complexityScore": 7,
+      "treated": false,
+      "dominantDriver": "Specialist Assignment"
+    },
+    {
+      "id": "ADM_0028",
+      "date": "2024-05-07",
+      "primaryEntity": "Pulmonology",
+      "category": "Elective",
+      "value": 42671,
+      "actualDelayDays": 8,
+      "predictedDelayDays": 15.1,
+      "counterfactualDelayDays": 6.1,
+      "counterfactualLabel": "If the specialist consult had happened within 12 hours",
+      "drivers": [
+        {
+          "label": "Specialist Assignment",
+          "contributionDays": 2.7,
+          "kind": "controllable"
+        },
+        {
+          "label": "Insurance Expedited",
+          "contributionDays": 2.21,
+          "kind": "controllable"
+        },
+        {
+          "label": "Treatment Duration",
+          "contributionDays": 1.32,
+          "kind": "controllable"
+        },
+        {
+          "label": "Patient Complexity",
+          "contributionDays": 0.67,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ADM_0000",
+        "ADM_0004",
+        "ADM_0014"
+      ],
+      "populationAvg": 7.9,
+      "percentile": 50,
+      "controllableDays": 6.23,
+      "structuralDays": 0.67,
+      "complexityScore": 7,
+      "treated": false,
+      "dominantDriver": "Specialist Assignment"
+    },
+    {
+      "id": "ADM_0029",
+      "date": "2024-06-08",
+      "primaryEntity": "Neurology",
+      "category": "Elective",
+      "value": 12769,
+      "actualDelayDays": 8.6,
+      "predictedDelayDays": 17.9,
+      "counterfactualDelayDays": 5.6,
+      "counterfactualLabel": "If the specialist consult had happened within 12 hours",
+      "drivers": [
+        {
+          "label": "Specialist Assignment",
+          "contributionDays": 4.3,
+          "kind": "controllable"
+        },
+        {
+          "label": "Treatment Duration",
+          "contributionDays": 3.61,
+          "kind": "controllable"
+        },
+        {
+          "label": "Insurance Expedited",
+          "contributionDays": 1.67,
+          "kind": "controllable"
+        },
+        {
+          "label": "Patient Complexity",
+          "contributionDays": 0.79,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ADM_0036",
+        "ADM_0026",
+        "ADM_0013"
+      ],
+      "populationAvg": 7.9,
+      "percentile": 63,
+      "controllableDays": 9.58,
+      "structuralDays": 0.79,
+      "complexityScore": 5,
+      "treated": true,
+      "dominantDriver": "Specialist Assignment"
+    },
+    {
+      "id": "ADM_0030",
+      "date": "2024-01-09",
+      "primaryEntity": "Pulmonology",
+      "category": "Emergency",
+      "value": 65360,
+      "actualDelayDays": 6.3,
+      "predictedDelayDays": -1.5,
+      "counterfactualDelayDays": 3.5,
+      "counterfactualLabel": "If the specialist consult had happened within 12 hours",
+      "drivers": [
+        {
+          "label": "Specialist Assignment",
+          "contributionDays": -4.06,
+          "kind": "controllable"
+        },
+        {
+          "label": "Treatment Duration",
+          "contributionDays": -3.28,
+          "kind": "controllable"
+        },
+        {
+          "label": "Insurance Expedited",
+          "contributionDays": -1.16,
+          "kind": "controllable"
+        },
+        {
+          "label": "Patient Complexity",
+          "contributionDays": -0.51,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ADM_0016",
+        "ADM_0024",
+        "ADM_0005"
+      ],
+      "populationAvg": 7.9,
+      "percentile": 30,
+      "controllableDays": -8.5,
+      "structuralDays": -0.51,
+      "complexityScore": 3,
+      "treated": true,
+      "dominantDriver": "Specialist Assignment"
+    },
+    {
+      "id": "ADM_0031",
+      "date": "2024-02-10",
+      "primaryEntity": "Cardiology",
+      "category": "Day Case",
+      "value": 55889,
+      "actualDelayDays": 9.6,
+      "predictedDelayDays": 20.2,
+      "counterfactualDelayDays": 6.7,
+      "counterfactualLabel": "If the specialist consult had happened within 12 hours",
+      "drivers": [
+        {
+          "label": "Specialist Assignment",
+          "contributionDays": 4.14,
+          "kind": "controllable"
+        },
+        {
+          "label": "Treatment Duration",
+          "contributionDays": 4.01,
+          "kind": "controllable"
+        },
+        {
+          "label": "Insurance Expedited",
+          "contributionDays": 2.16,
+          "kind": "controllable"
+        },
+        {
+          "label": "Patient Complexity",
+          "contributionDays": 0.6,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ADM_0002",
+        "ADM_0009",
+        "ADM_0022"
+      ],
+      "populationAvg": 7.9,
+      "percentile": 78,
+      "controllableDays": 10.31,
+      "structuralDays": 0.6,
+      "complexityScore": 1,
+      "treated": true,
+      "dominantDriver": "Specialist Assignment"
+    },
+    {
+      "id": "ADM_0032",
+      "date": "2024-03-11",
+      "primaryEntity": "Neurology",
+      "category": "Maternity",
+      "value": 27199,
+      "actualDelayDays": 2.2,
+      "predictedDelayDays": -2.1,
+      "counterfactualDelayDays": 0.3,
+      "counterfactualLabel": "If the specialist consult had happened within 12 hours",
+      "drivers": [
+        {
+          "label": "Specialist Assignment",
+          "contributionDays": -6.57,
+          "kind": "controllable"
+        },
+        {
+          "label": "Treatment Duration",
+          "contributionDays": -1.92,
+          "kind": "controllable"
+        },
+        {
+          "label": "Insurance Expedited",
+          "contributionDays": -0.67,
+          "kind": "controllable"
+        },
+        {
+          "label": "Patient Complexity",
+          "contributionDays": -0.62,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ADM_0007",
+        "ADM_0001",
+        "ADM_0021"
+      ],
+      "populationAvg": 7.9,
+      "percentile": 3,
+      "controllableDays": -9.16,
+      "structuralDays": -0.62,
+      "complexityScore": 4,
+      "treated": false,
+      "dominantDriver": "Specialist Assignment"
+    },
+    {
+      "id": "ADM_0033",
+      "date": "2024-04-12",
+      "primaryEntity": "Pulmonology",
+      "category": "Transfer",
+      "value": 7550,
+      "actualDelayDays": 7.7,
+      "predictedDelayDays": -2,
+      "counterfactualDelayDays": 4,
+      "counterfactualLabel": "If the specialist consult had happened within 12 hours",
+      "drivers": [
+        {
+          "label": "Specialist Assignment",
+          "contributionDays": -5.23,
+          "kind": "controllable"
+        },
+        {
+          "label": "Treatment Duration",
+          "contributionDays": -2.91,
+          "kind": "controllable"
+        },
+        {
+          "label": "Insurance Expedited",
+          "contributionDays": -2.14,
+          "kind": "controllable"
+        },
+        {
+          "label": "Patient Complexity",
+          "contributionDays": -0.29,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ADM_0035",
+        "ADM_0010",
+        "ADM_0004"
+      ],
+      "populationAvg": 7.9,
+      "percentile": 40,
+      "controllableDays": -10.28,
+      "structuralDays": -0.29,
+      "complexityScore": 3,
+      "treated": true,
+      "dominantDriver": "Specialist Assignment"
+    },
+    {
+      "id": "ADM_0034",
+      "date": "2024-05-13",
+      "primaryEntity": "Cardiology",
+      "category": "Emergency",
+      "value": 74239,
+      "actualDelayDays": 9.1,
+      "predictedDelayDays": 17,
+      "counterfactualDelayDays": 5.6,
+      "counterfactualLabel": "If the specialist consult had happened within 12 hours",
+      "drivers": [
+        {
+          "label": "Specialist Assignment",
+          "contributionDays": 5.01,
+          "kind": "controllable"
+        },
+        {
+          "label": "Treatment Duration",
+          "contributionDays": 2,
+          "kind": "controllable"
+        },
+        {
+          "label": "Insurance Expedited",
+          "contributionDays": 1.36,
+          "kind": "controllable"
+        },
+        {
+          "label": "Patient Complexity",
+          "contributionDays": 0.59,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ADM_0011",
+        "ADM_0013",
+        "ADM_0037"
+      ],
+      "populationAvg": 7.9,
+      "percentile": 68,
+      "controllableDays": 8.37,
+      "structuralDays": 0.59,
+      "complexityScore": 5,
+      "treated": false,
+      "dominantDriver": "Specialist Assignment"
+    },
+    {
+      "id": "ADM_0035",
+      "date": "2024-06-14",
+      "primaryEntity": "Neurology",
+      "category": "Elective",
+      "value": 38699,
+      "actualDelayDays": 7.7,
+      "predictedDelayDays": -0.3,
+      "counterfactualDelayDays": 4.9,
+      "counterfactualLabel": "If the specialist consult had happened within 12 hours",
+      "drivers": [
+        {
+          "label": "Treatment Duration",
+          "contributionDays": -4.01,
+          "kind": "controllable"
+        },
+        {
+          "label": "Specialist Assignment",
+          "contributionDays": -2.32,
+          "kind": "controllable"
+        },
+        {
+          "label": "Insurance Expedited",
+          "contributionDays": -1.09,
+          "kind": "controllable"
+        },
+        {
+          "label": "Patient Complexity",
+          "contributionDays": -0.23,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ADM_0033",
+        "ADM_0010",
+        "ADM_0004"
+      ],
+      "populationAvg": 7.9,
+      "percentile": 43,
+      "controllableDays": -7.42,
+      "structuralDays": -0.23,
+      "complexityScore": 3,
+      "treated": false,
+      "dominantDriver": "Treatment Duration"
+    },
+    {
+      "id": "ADM_0036",
+      "date": "2024-01-15",
+      "primaryEntity": "Pulmonology",
+      "category": "Day Case",
+      "value": 47760,
+      "actualDelayDays": 8.5,
+      "predictedDelayDays": 16.7,
+      "counterfactualDelayDays": 6.2,
+      "counterfactualLabel": "If the specialist consult had happened within 12 hours",
+      "drivers": [
+        {
+          "label": "Specialist Assignment",
+          "contributionDays": 3.34,
+          "kind": "controllable"
+        },
+        {
+          "label": "Insurance Expedited",
+          "contributionDays": 2.15,
+          "kind": "controllable"
+        },
+        {
+          "label": "Treatment Duration",
+          "contributionDays": 2.09,
+          "kind": "controllable"
+        },
+        {
+          "label": "Patient Complexity",
+          "contributionDays": 0.84,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ADM_0026",
+        "ADM_0029",
+        "ADM_0000"
+      ],
+      "populationAvg": 7.9,
+      "percentile": 60,
+      "controllableDays": 7.58,
+      "structuralDays": 0.84,
+      "complexityScore": 8,
+      "treated": true,
+      "dominantDriver": "Specialist Assignment"
+    },
+    {
+      "id": "ADM_0037",
+      "date": "2024-02-16",
+      "primaryEntity": "Neurology",
+      "category": "Emergency",
+      "value": 69114,
+      "actualDelayDays": 9.3,
+      "predictedDelayDays": 15.3,
+      "counterfactualDelayDays": 7.3,
+      "counterfactualLabel": "If the specialist consult had happened within 12 hours",
+      "drivers": [
+        {
+          "label": "Specialist Assignment",
+          "contributionDays": 2.86,
+          "kind": "controllable"
+        },
+        {
+          "label": "Treatment Duration",
+          "contributionDays": 1.92,
+          "kind": "controllable"
+        },
+        {
+          "label": "Insurance Expedited",
+          "contributionDays": 1.46,
+          "kind": "controllable"
+        },
+        {
+          "label": "Patient Complexity",
+          "contributionDays": 0.22,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ADM_0011",
+        "ADM_0002",
+        "ADM_0034"
+      ],
+      "populationAvg": 7.9,
+      "percentile": 73,
+      "controllableDays": 6.24,
+      "structuralDays": 0.22,
+      "complexityScore": 10,
+      "treated": false,
+      "dominantDriver": "Specialist Assignment"
+    },
+    {
+      "id": "ADM_0038",
+      "date": "2024-03-17",
+      "primaryEntity": "Neurology",
+      "category": "Emergency",
+      "value": 52438,
+      "actualDelayDays": 5,
+      "predictedDelayDays": -0.7,
+      "counterfactualDelayDays": 1.5,
+      "counterfactualLabel": "If the specialist consult had happened within 12 hours",
+      "drivers": [
+        {
+          "label": "Specialist Assignment",
+          "contributionDays": -5,
+          "kind": "controllable"
+        },
+        {
+          "label": "Insurance Expedited",
+          "contributionDays": -2.06,
+          "kind": "controllable"
+        },
+        {
+          "label": "Treatment Duration",
+          "contributionDays": -1.03,
+          "kind": "controllable"
+        },
+        {
+          "label": "Patient Complexity",
+          "contributionDays": -0.25,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ADM_0017",
+        "ADM_0025",
+        "ADM_0027"
+      ],
+      "populationAvg": 7.9,
+      "percentile": 15,
+      "controllableDays": -8.09,
+      "structuralDays": -0.25,
+      "complexityScore": 4,
+      "treated": true,
+      "dominantDriver": "Specialist Assignment"
+    },
+    {
+      "id": "ADM_0039",
+      "date": "2024-04-18",
+      "primaryEntity": "Neurology",
+      "category": "Emergency",
+      "value": 16212,
+      "actualDelayDays": 10.6,
+      "predictedDelayDays": 17.2,
+      "counterfactualDelayDays": 7.6,
+      "counterfactualLabel": "If the specialist consult had happened within 12 hours",
+      "drivers": [
+        {
+          "label": "Specialist Assignment",
+          "contributionDays": 4.29,
+          "kind": "controllable"
+        },
+        {
+          "label": "Treatment Duration",
+          "contributionDays": 2.3,
+          "kind": "controllable"
+        },
+        {
+          "label": "Insurance Expedited",
+          "contributionDays": 1.93,
+          "kind": "controllable"
+        },
+        {
+          "label": "Patient Complexity",
+          "contributionDays": 0.72,
+          "kind": "structural"
+        }
+      ],
+      "similarCaseIds": [
+        "ADM_0015",
+        "ADM_0003",
+        "ADM_0019"
+      ],
+      "populationAvg": 7.9,
+      "percentile": 93,
+      "controllableDays": 8.52,
+      "structuralDays": 0.72,
+      "complexityScore": 4,
+      "treated": true,
+      "dominantDriver": "Specialist Assignment"
+    }
+  ]
+}

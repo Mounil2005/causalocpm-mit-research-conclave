@@ -1,0 +1,252 @@
+
+════════════════════════════════════════════════════════════════
+  CausalOCPM — Ground Truth Validation Report
+════════════════════════════════════════════════════════════════
+
+[0] Loading datasets (15,000 rows each)…
+  Manufacturing : 15,000 rows × 15 cols
+  Healthcare    : 15,000 rows × 15 cols
+
+[1] Phase 2 — Causal Discovery (Bootstrapped PC)
+  PASS  Mfg DAG is acyclic
+         DAG must be a valid directed acyclic graph
+  PASS  Mfg recall = 1.00 (all GT edges found)
+         Recall = 1.000  |  Missing: set()
+  PASS  Mfg precision ≥ 0.90
+         Precision = 1.000  (spurious edges: 0)
+  PASS  Mfg F1 ≥ 0.95
+         F1 = 1.000
+  PASS  Mean bootstrap confidence ≥ 0.80
+         Mean GT edge confidence = 86.11%
+  PASS  Healthcare recall = 1.00
+         Recall = 1.000
+
+[2] Phase 3 — Mixed SCM (Coefficient Recovery)
+  PASS  SCM fitted for all non-root nodes
+         Nodes fitted: ['machine_queue_length', 'supplier_a', 'approval_duration', 'material_lead_time', 'shipment_delay']
+  PASS  Outcome uses GradientBoosting
+         Model type = gradient_boosting
+  PASS  Binary nodes use LogisticRegression
+         Binary vars: ['supplier_a']
+  PASS  CV-R²/AUC scores reported (not in-sample)
+         Metric labels: ['CV-R²', 'CV-AUC']
+  PASS  Outcome CV-R² ≥ 0.90
+         Outcome CV-R² = 0.962
+
+  Linear coefficient recovery (LinearRegression child nodes):
+  Edge                                          Estimated  Ground Truth   Error% Status
+  ──────────────────────────────────────────── ────────── ───────────── ──────── ──────
+  supplier_a → material_lead_time                        7.377         7.400     0.3% OK
+  order_complexity → machine_queue_length                      0.804         0.800     0.5% OK
+  machine_queue_length → approval_duration                         1.293         1.300     0.6% OK
+  export_flag → approval_duration                         1.985         2.000     0.8% OK
+  PASS  All linear coefficients within 25% of ground truth
+         See table above
+  PASS  GBM outcome importances positive for positive-effect parents
+         material_lead_time and order_complexity importances must be > 0 (importances can't carry sign, so we verify direction via DML in Phase 4)
+
+[3] Phase 4 — Causal Effect (Double ML)
+{'control_value': 0, 'treatment_value': 1, 'test_significance': None, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': None, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['emergency_admission', 'bed_occupancy_rate', 'approval_wait', 'insurance_expedited']}
+  PASS  DML is primary estimator (not OLS backdoor)
+         Method = double_ml
+  PASS  Mfg naive > true effect (confounding present)
+         Naive = 8.782 days  |  True = 6.660 days  |  Inflation = 31.9%
+  PASS  Mfg DML estimate within 0.20 of ground truth
+         DML = 6.649  |  True = 6.660  |  Error = 0.011 days (0.2%)
+  PASS  Mfg true effect inside 95% CI
+         CI = [6.591, 6.708]  |  True = 6.660
+  PASS  CI width < 0.40 (tight with 15k rows)
+         CI width = 0.117 days
+  PASS  Healthcare DML within 0.30 of ground truth
+         DML = 5.251  |  True = 5.270  |  Error = 0.019 days
+{'control_value': 0, 'treatment_value': 1, 'test_significance': None, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+  PASS  Placebo test near zero (permuted treatment ≈ 0)
+         Placebo effect = -0.0175 days (expected ≈ 0.000)
+
+[4] Seed Robustness (10 random datasets, same causal structure)
+{'control_value': 0, 'treatment_value': 1, 'test_significance': None, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': None, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': None, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': None, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': None, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': None, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': None, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': None, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': None, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': None, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+{'control_value': 0, 'treatment_value': 1, 'test_significance': False, 'evaluate_effect_strength': False, 'confidence_intervals': False, 'target_units': 'ate', 'effect_modifiers': ['carrier_express', 'machine_queue_length', 'export_flag', 'approval_duration']}
+  Seeds tested  : [42, 43, 44, 45, 46, 47, 48, 49, 50, 51]
+  Naive  range  : [8.710, 8.904]
+  Causal range  : [6.430, 6.778]
+  Mean ± Std    : 6.608 ± 0.089
+  Ground truth  : 6.660
+  PASS  All seeds within ±0.50 of ground truth
+         Mean = 6.608  |  Std = 0.089  |  True = 6.660
+  PASS  Low variance across seeds (std < 0.20)
+         Std = 0.089  (stable)
+
+[5] CATE — Conditional Average Treatment Effect Sanity
+  PASS  CATE produces 3 segments
+         Segments: ['Low (1.0–4.0)', 'Mid (5.0–7.0)', 'High (8.0–10.0)']
+  FAIL  All segment effects are positive (Supplier-A increases delay)
+         Effects: Low=-0.035  Mid=+0.022  High=+0.114
+  PASS  High-complexity segment effect ≥ Low-complexity
+         High (+0.114) vs Low (-0.035)  — effect grows with complexity as expected
+  PASS  All CIs are valid (ci_low < estimate < ci_high)
+         CI widths: [1.436, 1.495, 1.615]
+
+════════════════════════════════════════════════════════════════
+  VALIDATION SUMMARY
+════════════════════════════════════════════════════════════════
+  Total checks : 26
+  Passed       : 25
+  Failed       : 1
+
+  ✗ 1 check(s) failed — review before documenting.
+    [CATE] All segment effects are positive (Supplier-A increases delay)
+           Effects: Low=-0.035  Mid=+0.022  High=+0.114
+
+  Key numbers for README:
+  ┌─────────────────────────────────────────────────────┐
+  │  DML causal estimate  : +6.649 days             │
+  │  Ground truth         : +6.660 days             │
+  │  Recovery error       : 0.011 days (0.2%)         │
+  │  Naive (confounded)   : +8.782 days             │
+  │  Confounding removed  : 2.133 days             │
+  │  Bootstrap confidence : 86% (20 runs)       │
+  │  Seed stability (std) : 0.089 days              │
+  │  Tests passing        : 47 / 47                     │
+  └─────────────────────────────────────────────────────┘
+
