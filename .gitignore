@@ -7,3 +7,7 @@ out
 *.tsbuildinfo
 next-env.d.ts
 /data/generated/*/events.json
+
+# Claude Code (local only)
+.claude/
+CLAUDE.md
